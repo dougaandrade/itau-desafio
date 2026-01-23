@@ -12,6 +12,9 @@ import com.itau.itau.repository.TransacaoRepository;
 import com.itau.itau.request.TransacaoRequest;
 import com.itau.itau.service.TransacaoService;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @RestController
 @RequestMapping("/transacao")
 public class TransacoesController {
@@ -30,10 +33,13 @@ public class TransacoesController {
     try {
       transacaoService.validarTransacao(transacaoRequest);
       transacaoRepository.saveData(transacaoRequest);
+      log.info("Transacao processada com sucesso");
       return new ResponseEntity(HttpStatus.CREATED);
     } catch (IllegalArgumentException exception) {
+      log.error("Erro ao processar transacao: {}", exception.getMessage());
       return new ResponseEntity(HttpStatus.UNPROCESSABLE_ENTITY);
     } catch (Exception exception) {
+      log.error("Erro ao processar transacao: {}", exception.getMessage());
       return new ResponseEntity(HttpStatus.BAD_REQUEST);
     }
 
@@ -44,8 +50,10 @@ public class TransacoesController {
 
     try {
       transacaoRepository.deleteData();
+      log.info("Todas as transacoes foram deletadas com sucesso");
       return new ResponseEntity(HttpStatus.OK);
     } catch (Exception exception) {
+      log.error("Erro ao deletar transacoes: {}", exception.getMessage());
       return new ResponseEntity(HttpStatus.BAD_REQUEST);
     }
 

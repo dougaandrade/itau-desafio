@@ -10,6 +10,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.itau.itau.properties.EstatisticaProperties;
 import com.itau.itau.repository.TransacaoRepository;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @RestController
 @RequestMapping("/estatistica")
 public class EstatisticaController {
@@ -23,7 +26,11 @@ public class EstatisticaController {
   }
 
   @GetMapping
+
   public ResponseEntity obterEstatisticas() {
+
+    log.info("Obtendo estatisticas");
+
     final var horaAtual = OffsetDateTime.now()
         .minusSeconds(estatisticaProperties.intervaloEmSegundos());
 
