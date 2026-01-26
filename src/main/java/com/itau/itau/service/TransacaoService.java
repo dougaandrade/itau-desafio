@@ -30,4 +30,9 @@ public class TransacaoService {
 
   }
 
+  public boolean isTransacaoValida(OffsetDateTime dataHoraTransacao, OffsetDateTime horaAtual) {
+    OffsetDateTime limiteInferior = horaAtual.minusSeconds(60);
+    return !dataHoraTransacao.isBefore(limiteInferior) && !dataHoraTransacao.isAfter(horaAtual);
+  }
+
 }

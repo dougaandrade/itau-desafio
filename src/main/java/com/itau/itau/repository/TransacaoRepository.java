@@ -24,6 +24,11 @@ public class TransacaoRepository {
   }
 
   public void clearData() {
+
+  }
+
+  public List<TransacaoRequest> findAll() {
+    return transacaoList;
   }
 
   public EstatisticaDTO obterEstatisticas(OffsetDateTime horaAtual) {
