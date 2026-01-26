@@ -26,7 +26,6 @@ public class EstatisticaController {
   }
 
   @GetMapping
-
   public ResponseEntity obterEstatisticas() {
 
     log.info("Obtendo estatisticas");
