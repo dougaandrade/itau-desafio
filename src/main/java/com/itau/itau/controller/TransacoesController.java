@@ -1,5 +1,6 @@
 package com.itau.itau.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -19,13 +20,10 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/transacao")
 public class TransacoesController {
 
-  private final TransacaoService transacaoService;
-  private final TransacaoRepository transacaoRepository;
-
-  public TransacoesController(TransacaoService transacaoService, TransacaoRepository transacaoRepository) {
-    this.transacaoService = transacaoService;
-    this.transacaoRepository = transacaoRepository;
-  }
+  @Autowired
+  private TransacaoService transacaoService;
+  @Autowired
+  private TransacaoRepository transacaoRepository;
 
   @PostMapping
   public ResponseEntity payment(@RequestBody TransacaoRequest transacaoRequest) {
