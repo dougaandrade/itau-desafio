@@ -1,7 +1,7 @@
 package com.itau.itau.request;
 
 import java.math.BigDecimal;
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -17,5 +17,5 @@ public class TransacaoRequest {
   @NotNull(message = "O valor da transacao nao pode ser nulo")
   @Positive(message = "O valor da transacao deve ser maior que zero")
   private BigDecimal valor;
-  private OffsetDateTime dataHora;
+  private LocalDateTime dataHora;
 }

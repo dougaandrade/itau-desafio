@@ -1,7 +1,5 @@
 package com.itau.itau.controller;
 
-import java.time.OffsetDateTime;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,20 +27,19 @@ public class TransacoesController {
   private TransacaoRepository transacaoRepository;
 
   @PostMapping
-  public ResponseEntity<String> payment(@RequestBody TransacaoRequest transacaoRequest) {
-
+  public ResponseEntity payment(@RequestBody TransacaoRequest transacaoRequest) {
     try {
       transacaoService.validarTransacao(transacaoRequest);
       transacaoRepository.saveData(transacaoRequest);
-      transacaoService.isTransacaoValida(transacaoRequest.getDataHora(), OffsetDateTime.now());
+      transacaoService.isTransacaoValida(transacaoRequest.getDataHora(), transacaoRequest.getDataHora());
       log.info("Transacao processada com sucesso");
-      return new ResponseEntity<>("Transacao criada com sucesso", HttpStatus.CREATED);
+      return new ResponseEntity("Transacao criada com sucesso", HttpStatus.CREATED);
     } catch (IllegalArgumentException exception) {
       log.error("Erro ao processar transacao: {}", exception.getMessage());
-      return new ResponseEntity<>("Erro: " + exception.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
+      return new ResponseEntity("Erro: " + exception.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
     } catch (Exception exception) {
       log.error("Erro ao processar transacao: {}", exception.getMessage());
-      return new ResponseEntity<>("Erro: " + exception.getMessage(), HttpStatus.BAD_REQUEST);
+      return new ResponseEntity("Erro: " + exception.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
   }
@@ -62,14 +59,14 @@ public class TransacoesController {
   }
 
   @GetMapping()
-  public ResponseEntity<?> findAll() {
+  public ResponseEntity<TransacaoRequest> findAll() {
     try {
       log.info("Transacoes recuperadas com sucesso");
-      return new ResponseEntity<>("Transacoes: \n" + transacaoRepository.findAll() + "\n", HttpStatus.OK);
+      return new ResponseEntity(transacaoRepository.findAll(), HttpStatus.OK);
     } catch (Exception exception) {
       log.error("Erro ao recuperar transacoes: {}", exception.getMessage());
-      return new ResponseEntity<>("Erro: " + exception.getMessage(), HttpStatus.BAD_REQUEST);
+      return new ResponseEntity("Erro: " + exception.getMessage(), HttpStatus.BAD_REQUEST);
     }
-  }
 
+  }
 }

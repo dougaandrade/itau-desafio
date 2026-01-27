@@ -1,7 +1,7 @@
 package com.itau.itau.dto;
 
 import java.math.BigDecimal;
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,5 +11,5 @@ import lombok.NoArgsConstructor;
 public class TransacaoDTO {
 
   private BigDecimal valor;
-  private OffsetDateTime dataHora;
+  private LocalDateTime dataHora;
 }

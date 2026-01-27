@@ -1,6 +1,6 @@
 package com.itau.itau.repository;
 
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,23 +23,18 @@ public class TransacaoRepository {
     transacaoList.clear();
   }
 
-  public void clearData() {
-
-  }
-
   public List<TransacaoRequest> findAll() {
     return transacaoList;
   }
 
-  public EstatisticaDTO obterEstatisticas(OffsetDateTime horaAtual) {
+  public EstatisticaDTO obterEstatisticas() {
 
     if (transacaoList.isEmpty()) {
       return new EstatisticaDTO(0L, 0.0, 0.0, 0.0, 0.0);
     }
 
     final var summary = transacaoList.stream()
-        .filter(transacao -> transacao.getDataHora().isAfter(horaAtual) ||
-            transacao.getDataHora().isEqual(horaAtual))
+        .filter(transacao -> transacao.getDataHora().isAfter(LocalDateTime.now().minusMinutes(1)))
         .mapToDouble(transacao -> transacao.getValor().doubleValue())
         .summaryStatistics();
 
