@@ -34,9 +34,8 @@ public class TransacaoRepository {
     }
 
     final var summary = transacaoList.stream()
-        .filter(transacao -> transacao.getDataHora().isAfter(LocalDateTime.now()))
-        .mapToDouble(transacao -> transacao.getValor()
-            .doubleValue())
+        .filter(transacao -> transacao.getDataHora().isAfter(LocalDateTime.now().minusMinutes(1)))
+        .mapToDouble(transacao -> transacao.getValor().doubleValue())
         .summaryStatistics();
 
     return new EstatisticaDTO(summary.getCount(), summary.getAverage(), summary.getMax(),

@@ -32,10 +32,9 @@ public class TransacoesController {
       transacaoService.validarTransacao(transacaoRequest);
       transacaoRepository.saveData(transacaoRequest);
       transacaoService.isTransacaoValida(transacaoRequest.getDataHora(), transacaoRequest.getDataHora());
-      log.info("Transacao processada com sucesso" + " ID: {}" + " DataHora: {}", transacaoRequest.getId(),
-          transacaoRequest.getDataHora());
-      return new ResponseEntity("Transacao criada com sucesso" + " ID: " + transacaoRequest.getId() + " DataHora: "
-          + transacaoRequest.getDataHora(), HttpStatus.CREATED);
+      log.info("Transacao processada com sucesso" + " ID: " + transacaoRequest.getId());
+      return new ResponseEntity("Transacao criada com sucesso" + " ID: " + transacaoRequest.getId(),
+          HttpStatus.CREATED);
     } catch (IllegalArgumentException exception) {
       log.error("Erro ao processar transacao: {}", exception.getMessage());
       return new ResponseEntity("Erro: " + exception.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
@@ -51,8 +50,7 @@ public class TransacoesController {
 
     try {
       transacaoRepository.deleteData();
-      log.info("Todas as transacoes foram deletadas com sucesso" + " ID: {}" + " DataHora: {}",
-          System.currentTimeMillis(), System.currentTimeMillis());
+      log.info("Todas as transacoes foram deletadas com sucesso");
       return new ResponseEntity<>("Todas as transacoes foram deletadas com sucesso", HttpStatus.OK);
     } catch (Exception exception) {
       log.error("Erro ao deletar transacoes: {}", exception.getMessage());

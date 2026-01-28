@@ -21,7 +21,6 @@ public class TransacaoService {
 
     transacaoRequest.setDataHora(LocalDateTime.now());
     transacaoRequest.setId(System.currentTimeMillis());
-    
 
   }
 
