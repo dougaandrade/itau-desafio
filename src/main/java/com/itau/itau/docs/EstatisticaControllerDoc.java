@@ -6,7 +6,9 @@ import com.itau.itau.dto.EstatisticaDTO;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
+@Tag(name = "Estatisticas", description = "Operacoes relacionadas a estatisticas de transacoes")
 public interface EstatisticaControllerDoc {
 
   @Operation(summary = "Obtem Estatisticas", description = "Obtem as estatisticas de transações")

@@ -1,5 +1,6 @@
 package com.itau.itau.controller;
 
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +31,10 @@ public class EstatisticaController {
 
     log.info("Obtendo estatisticas");
 
-    if (OffsetDateTime.now().getSecond() % estatisticaProperties.intervaloEmSegundos() != 0) {
+    LocalDateTime limiteInferior = LocalDateTime.now(OffsetDateTime.now().getOffset())
+        .minusSeconds(estatisticaProperties.intervaloEmSegundos());
+
+    if (LocalDateTime.now(OffsetDateTime.now().getOffset()).isBefore(limiteInferior)) {
       return ResponseEntity.ok(new EstatisticaDTO(0L, 0.0, 0.0, 0.0, 0.0));
     }
 

@@ -12,14 +12,16 @@ public class TransacaoService {
 
   public void validarTransacao(TransacaoRequest transacaoRequest) {
 
-    if (transacaoRequest.getValor().compareTo(BigDecimal.ONE) <= 0) {
-      throw new IllegalArgumentException("Valor da transação deve ser maior que zero.");
-    }
     if (transacaoRequest.getValor() == null) {
       throw new IllegalArgumentException("Valor da transação é obrigatório.");
     }
+    if (transacaoRequest.getValor().compareTo(BigDecimal.ZERO) <= 0) {
+      throw new IllegalArgumentException("Valor da transação deve ser maior que zero.");
+    }
 
     transacaoRequest.setDataHora(LocalDateTime.now());
+    transacaoRequest.setId(System.currentTimeMillis());
+    
 
   }
 

@@ -32,7 +32,7 @@ public class TransacoesController {
       transacaoService.validarTransacao(transacaoRequest);
       transacaoRepository.saveData(transacaoRequest);
       transacaoService.isTransacaoValida(transacaoRequest.getDataHora(), transacaoRequest.getDataHora());
-      log.info("Transacao processada com sucesso");
+      log.info("Transacao processada com sucesso" + "Id: {}", transacaoRequest.getId());
       return new ResponseEntity("Transacao criada com sucesso", HttpStatus.CREATED);
     } catch (IllegalArgumentException exception) {
       log.error("Erro ao processar transacao: {}", exception.getMessage());
