@@ -1,7 +1,9 @@
 package com.itau.itau.dto;
 
+import lombok.Data;
 import lombok.Getter;
 
+@Data
 @Getter
 public class EstatisticaDTO {
 

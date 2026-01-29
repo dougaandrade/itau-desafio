@@ -27,20 +27,20 @@ public class TransacoesController {
   private TransacaoRepository transacaoRepository;
 
   @PostMapping
-  public ResponseEntity payment(@RequestBody TransacaoRequest transacaoRequest) {
+  public ResponseEntity<String> payment(@RequestBody TransacaoRequest transacaoRequest) {
     try {
       transacaoService.validarTransacao(transacaoRequest);
       transacaoRepository.saveData(transacaoRequest);
       transacaoService.isTransacaoValida(transacaoRequest.getDataHora(), transacaoRequest.getDataHora());
       log.info("Transacao processada com sucesso" + " ID: " + transacaoRequest.getId());
-      return new ResponseEntity("Transacao criada com sucesso" + " ID: " + transacaoRequest.getId(),
+      return new ResponseEntity<>("Transacao criada com sucesso" + " ID: " + transacaoRequest.getId(),
           HttpStatus.CREATED);
     } catch (IllegalArgumentException exception) {
       log.error("Erro ao processar transacao: {}", exception.getMessage());
-      return new ResponseEntity("Erro: " + exception.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
+      return new ResponseEntity<>("Erro: " + exception.getMessage(), HttpStatus.BAD_REQUEST);
     } catch (Exception exception) {
       log.error("Erro ao processar transacao: {}", exception.getMessage());
-      return new ResponseEntity("Erro: " + exception.getMessage(), HttpStatus.BAD_REQUEST);
+      return new ResponseEntity<>("Erro: " + exception.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
   }
@@ -60,13 +60,13 @@ public class TransacoesController {
   }
 
   @GetMapping()
-  public ResponseEntity<TransacaoRequest> findAll() {
+  public ResponseEntity<?> findAll() {
     try {
       log.info("Transacoes recuperadas com sucesso");
-      return new ResponseEntity(transacaoRepository.findAll(), HttpStatus.OK);
+      return new ResponseEntity<>(transacaoRepository.findAll(), HttpStatus.OK);
     } catch (Exception exception) {
       log.error("Erro ao recuperar transacoes: {}", exception.getMessage());
-      return new ResponseEntity("Erro: " + exception.getMessage(), HttpStatus.BAD_REQUEST);
+      return new ResponseEntity<>("Erro: " + exception.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
   }

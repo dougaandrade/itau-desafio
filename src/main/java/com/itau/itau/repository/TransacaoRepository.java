@@ -6,8 +6,8 @@ import java.util.List;
 
 import org.springframework.stereotype.Repository;
 
-import com.itau.itau.dto.EstatisticaDTO;
 import com.itau.itau.request.TransacaoRequest;
+import com.itau.itau.response.EstatisticaResponse;
 
 @Repository
 public class TransacaoRepository {
@@ -27,10 +27,10 @@ public class TransacaoRepository {
     return transacaoList;
   }
 
-  public EstatisticaDTO obterEstatisticas() {
+  public EstatisticaResponse obterEstatisticas() {
 
     if (transacaoList.isEmpty()) {
-      return new EstatisticaDTO(0L, 0.0, 0.0, 0.0, 0.0);
+      return new EstatisticaResponse(0L, 0.0, 0.0, 0.0, 0.0);
     }
 
     final var summary = transacaoList.stream()
@@ -38,7 +38,7 @@ public class TransacaoRepository {
         .mapToDouble(transacao -> transacao.getValor().doubleValue())
         .summaryStatistics();
 
-    return new EstatisticaDTO(summary.getCount(), summary.getAverage(), summary.getMax(),
+    return new EstatisticaResponse(summary.getCount(), summary.getAverage(), summary.getMax(),
         summary.getMin(), summary.getSum());
 
   }
