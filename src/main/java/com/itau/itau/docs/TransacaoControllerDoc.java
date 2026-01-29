@@ -19,8 +19,8 @@ public interface TransacaoControllerDoc {
   @ApiResponse(responseCode = "400", description = "Erro inesperado no servidor")
   ResponseEntity<Void> payment(@RequestBody TransacaoRequest transacaoRequest);
 
-  @Operation(summary = "Deleta a Transacao", description = "Remove todas as transaçoes adicionadas a lista")
-  @ApiResponse(responseCode = "200", description = "Todas as transaçoes foram deletadas")
+  @Operation(summary = "Remove transaçao por id", description = "Recebe um id e remove da lista de transaçoes")
+  @ApiResponse(responseCode = "201", description = "Transaçao removida com sucesso")
   ResponseEntity<Void> delete();
 
 }

@@ -1,10 +1,10 @@
 package com.itau.itau.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,17 +14,17 @@ import com.itau.itau.repository.TransacaoRepository;
 import com.itau.itau.request.TransacaoRequest;
 import com.itau.itau.service.TransacaoService;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestController
 @RequestMapping("/transacao")
+@AllArgsConstructor
 public class TransacoesController {
 
-  @Autowired
-  private TransacaoService transacaoService;
-  @Autowired
-  private TransacaoRepository transacaoRepository;
+  private final TransacaoService transacaoService;
+  private final TransacaoRepository transacaoRepository;
 
   @PostMapping
   public ResponseEntity<String> payment(@RequestBody TransacaoRequest transacaoRequest) {
@@ -33,28 +33,28 @@ public class TransacoesController {
       transacaoRepository.saveData(transacaoRequest);
       transacaoService.isTransacaoValida(transacaoRequest.getDataHora(), transacaoRequest.getDataHora());
       log.info("Transacao processada com sucesso" + " ID: " + transacaoRequest.getId());
-      return new ResponseEntity<>("Transacao criada com sucesso" + " ID: " + transacaoRequest.getId(),
+      return new ResponseEntity("Transacao criada com sucesso" + " ID: " + transacaoRequest.getId(),
           HttpStatus.CREATED);
     } catch (IllegalArgumentException exception) {
       log.error("Erro ao processar transacao: {}", exception.getMessage());
-      return new ResponseEntity<>("Erro: " + exception.getMessage(), HttpStatus.BAD_REQUEST);
+      return new ResponseEntity("Erro: " + exception.getMessage(), HttpStatus.BAD_REQUEST);
     } catch (Exception exception) {
       log.error("Erro ao processar transacao: {}", exception.getMessage());
-      return new ResponseEntity<>("Erro: " + exception.getMessage(), HttpStatus.BAD_REQUEST);
+      return new ResponseEntity("Erro: " + exception.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
   }
 
-  @DeleteMapping
-  public ResponseEntity<String> delete() {
+  @DeleteMapping("/delete/{id}")
+  public ResponseEntity<String> delete(@PathVariable Long id) {
 
     try {
-      transacaoRepository.deleteData();
-      log.info("Todas as transacoes foram deletadas com sucesso");
-      return new ResponseEntity<>("Todas as transacoes foram deletadas com sucesso", HttpStatus.OK);
+      transacaoRepository.deleteDataID(id);
+      log.info("Registro de transacao deletado com sucesso ID: {}", id);
+      return new ResponseEntity("Registro de transacao deletado com sucesso ID: " + id, HttpStatus.OK);
     } catch (Exception exception) {
       log.error("Erro ao deletar transacoes: {}", exception.getMessage());
-      return new ResponseEntity<>("Erro: " + exception.getMessage(), HttpStatus.BAD_REQUEST);
+      return new ResponseEntity("Erro: " + exception.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
   }
@@ -63,10 +63,10 @@ public class TransacoesController {
   public ResponseEntity<?> findAll() {
     try {
       log.info("Transacoes recuperadas com sucesso");
-      return new ResponseEntity<>(transacaoRepository.findAll(), HttpStatus.OK);
+      return new ResponseEntity(transacaoRepository.findAll(), HttpStatus.OK);
     } catch (Exception exception) {
       log.error("Erro ao recuperar transacoes: {}", exception.getMessage());
-      return new ResponseEntity<>("Erro: " + exception.getMessage(), HttpStatus.BAD_REQUEST);
+      return new ResponseEntity("Erro: " + exception.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
   }

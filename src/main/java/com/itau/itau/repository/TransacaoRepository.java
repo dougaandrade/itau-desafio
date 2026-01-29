@@ -1,7 +1,7 @@
 package com.itau.itau.repository;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import org.springframework.stereotype.Repository;
@@ -12,19 +12,27 @@ import com.itau.itau.response.EstatisticaResponse;
 @Repository
 public class TransacaoRepository {
 
-  List<TransacaoRequest> transacaoList = new ArrayList<>();
+  private final HashSet<TransacaoRequest> transacaoList = new HashSet<>();
 
   public void saveData(TransacaoRequest transacaoRequest) {
     transacaoList.add(transacaoRequest);
 
   }
 
-  public void deleteData() {
-    transacaoList.clear();
+  public TransacaoRequest deleteDataID(Long id) {
+
+    return transacaoList.stream()
+        .filter(transacao -> transacao.getId().equals(id))
+        .findFirst()
+        .map(transacao -> {
+          transacaoList.remove(transacao);
+          return transacao;
+        })
+        .orElseThrow(() -> new IllegalArgumentException("Transacao com ID " + id + " nao encontrada."));
   }
 
   public List<TransacaoRequest> findAll() {
-    return transacaoList;
+    return List.copyOf(transacaoList);
   }
 
   public EstatisticaResponse obterEstatisticas() {

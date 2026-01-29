@@ -2,7 +2,6 @@ package com.itau.itau.controller;
 
 import java.time.LocalDateTime;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,18 +11,18 @@ import com.itau.itau.properties.EstatisticaProperties;
 import com.itau.itau.repository.TransacaoRepository;
 import com.itau.itau.response.EstatisticaResponse;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestController
 @RequestMapping("/estatistica")
+@AllArgsConstructor
 public class EstatisticaController {
 
-  @Autowired
-  private EstatisticaProperties estatisticaProperties;
+  private final EstatisticaProperties estatisticaProperties;
 
-  @Autowired
-  private TransacaoRepository transacaoRepository;
+  private final TransacaoRepository transacaoRepository;
 
   @GetMapping
   public ResponseEntity<EstatisticaResponse> obterEstatisticas() {
