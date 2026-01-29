@@ -5,10 +5,16 @@ import java.time.LocalDateTime;
 
 import org.springframework.stereotype.Service;
 
+import com.itau.itau.properties.TransacaoProperties;
 import com.itau.itau.request.TransacaoRequest;
 
+import lombok.AllArgsConstructor;
+
 @Service
+@AllArgsConstructor
 public class TransacaoService {
+
+  private final TransacaoProperties transacaoProperties;
 
   public void validarTransacao(TransacaoRequest transacaoRequest) {
 
@@ -18,10 +24,21 @@ public class TransacaoService {
     if (transacaoRequest.getValor().compareTo(BigDecimal.ZERO) <= 0) {
       throw new IllegalArgumentException("Valor da transação deve ser maior que zero.");
     }
+    if (transacaoProperties.valorMinimoPorTransacao() != null &&
+        transacaoRequest.getValor().compareTo(transacaoProperties.valorMinimoPorTransacao()) < 0) {
+      throw new IllegalArgumentException(
+          String.format("Valor da transação (%.2f) é menor que o permitido (%.2f).",
+              transacaoRequest.getValor(), transacaoProperties.valorMinimoPorTransacao()));
+    }
+    if (transacaoProperties.valorMaximoPorTransacao() != null &&
+        transacaoRequest.getValor().compareTo(transacaoProperties.valorMaximoPorTransacao()) > 0) {
+      throw new IllegalArgumentException(
+          String.format("Valor da transação (%.2f) é maior que o permitido (%.2f).",
+              transacaoRequest.getValor(), transacaoProperties.valorMaximoPorTransacao()));
+    }
 
     transacaoRequest.setDataHora(LocalDateTime.now());
     transacaoRequest.setId(System.currentTimeMillis());
-
   }
 
   public boolean isTransacaoValida(LocalDateTime dataHoraTransacao,

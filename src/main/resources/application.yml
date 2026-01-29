@@ -1,2 +1,7 @@
 estatistica:
   intervaloEmSegundos: 60
+
+transacoes:
+  limitePorMinuto: 100
+  valorMaximoPorTransacao: 1000000
+  valorMinimoPorTransacao: 0.01
