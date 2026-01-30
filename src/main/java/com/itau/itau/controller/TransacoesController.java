@@ -29,6 +29,9 @@ public class TransacoesController {
   @PostMapping
   public ResponseEntity<String> payment(@RequestBody TransacaoRequest transacaoRequest) {
     try {
+
+      transacaoService.validarRateLimit(
+          transacaoRepository.contarTransacoesUltimoMinuto());
       transacaoService.validarTransacao(transacaoRequest);
       transacaoRepository.saveData(transacaoRequest);
       transacaoService.isTransacaoValida(transacaoRequest.getDataHora(), transacaoRequest.getDataHora());
@@ -37,7 +40,10 @@ public class TransacoesController {
           HttpStatus.CREATED);
     } catch (IllegalArgumentException exception) {
       log.error("Erro ao processar transacao: {}", exception.getMessage());
-      return new ResponseEntity("Erro: " + exception.getMessage(), HttpStatus.BAD_REQUEST);
+      HttpStatus status = exception.getMessage().contains("Limite de transações")
+          ? HttpStatus.TOO_MANY_REQUESTS
+          : HttpStatus.BAD_REQUEST;
+      return new ResponseEntity("Erro: " + exception.getMessage(), status);
     } catch (Exception exception) {
       log.error("Erro ao processar transacao: {}", exception.getMessage());
       return new ResponseEntity("Erro: " + exception.getMessage(), HttpStatus.BAD_REQUEST);

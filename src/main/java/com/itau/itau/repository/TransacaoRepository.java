@@ -35,6 +35,12 @@ public class TransacaoRepository {
     return List.copyOf(transacaoList);
   }
 
+  public Integer contarTransacoesUltimoMinuto() {
+    return (int) transacaoList.stream()
+        .filter(transacao -> transacao.getDataHora().isAfter(LocalDateTime.now().minusMinutes(1)))
+        .count();
+  }
+
   public EstatisticaResponse obterEstatisticas() {
 
     if (transacaoList.isEmpty()) {

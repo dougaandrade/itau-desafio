@@ -8,7 +8,7 @@ import org.springframework.validation.annotation.Validated;
 @Validated
 @ConfigurationProperties(prefix = "transacoes")
 public record TransacaoProperties(
-    Integer limitePorMinuto,
+    int limitePorMinuto,
     BigDecimal valorMaximoPorTransacao,
     BigDecimal valorMinimoPorTransacao) {
 }

@@ -15,7 +15,8 @@ public class OpenApiConfiguration {
         .title("API de Transações + Desafios Itau Java")
         .description("API para simulação de transações bancárias")
         .version("1.0.0");
-    info.addExtension("x-logo", "https://itau.com.br/logo.png");
+    info.addExtension("x-logo",
+        "https://www.itau.com.br/media/dam/m/59ca6000bfbf59d6/original/ITAU_LOGO_HEX_48X48.png");
     return new OpenAPI().info(info);
   }
 }
