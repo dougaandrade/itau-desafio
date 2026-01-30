@@ -27,23 +27,23 @@ public class TransacaoService {
     if (transacaoProperties.valorMinimoPorTransacao() != null &&
         transacaoRequest.getValor().compareTo(transacaoProperties.valorMinimoPorTransacao()) < 0) {
       throw new IllegalArgumentException(
-          String.format("Valor da transação é menor que o permitido.",
+          String.format("Valor da transação (%.2f) é menor que o permitido (%.2f).",
               transacaoRequest.getValor(), transacaoProperties.valorMinimoPorTransacao()));
     }
     if (transacaoProperties.valorMaximoPorTransacao() != null &&
         transacaoRequest.getValor().compareTo(transacaoProperties.valorMaximoPorTransacao()) > 0) {
       throw new IllegalArgumentException(
-          String.format("Valor da transação é maior que o permitido.",
+          String.format("Valor da transação (%.2f) é maior que o permitido (%.2f).",
               transacaoRequest.getValor(), transacaoProperties.valorMaximoPorTransacao()));
     }
     transacaoRequest.setDataHora(LocalDateTime.now());
     transacaoRequest.setId(System.currentTimeMillis());
   }
 
-  public void validarRateLimit(int quantidadeTransacoesUltimoMinuto) {
-    if (transacaoProperties.limitePorMinuto() == 0 ||
-        quantidadeTransacoesUltimoMinuto < transacaoProperties.limitePorMinuto()) {
-    } else {
+  public void validarRateLimit(Integer quantidadeTransacoesUltimoMinuto) {
+    if (transacaoProperties.limitePorMinuto() != null &&
+        transacaoProperties.limitePorMinuto() > 0 &&
+        quantidadeTransacoesUltimoMinuto >= transacaoProperties.limitePorMinuto()) {
       throw new IllegalArgumentException(
           String.format("Limite de transações por minuto excedido. Limite: %d, Atual: %d",
               transacaoProperties.limitePorMinuto(), quantidadeTransacoesUltimoMinuto));
