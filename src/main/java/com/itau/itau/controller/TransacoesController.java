@@ -1,8 +1,8 @@
 package com.itau.itau.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,47 +23,38 @@ import lombok.extern.slf4j.Slf4j;
 @AllArgsConstructor
 public class TransacoesController {
 
+  @Autowired
   private final TransacaoService transacaoService;
+
+  @Autowired
   private final TransacaoRepository transacaoRepository;
 
   @PostMapping
-  public ResponseEntity<String> payment(@RequestBody TransacaoRequest transacaoRequest) {
+  public ResponseEntity<TransacaoRequest> create(@RequestBody TransacaoRequest request) {
     try {
-
-      transacaoService.validarRateLimit(
-          transacaoRepository.contarTransacoesUltimoMinuto());
-      transacaoService.validarTransacao(transacaoRequest);
-      transacaoRepository.saveData(transacaoRequest);
-      transacaoService.isTransacaoValida(transacaoRequest.getDataHora(), transacaoRequest.getDataHora());
-      log.info("Transacao processada com sucesso" + " ID: " + transacaoRequest.getId());
-      return new ResponseEntity("Transacao criada com sucesso" + " ID: " + transacaoRequest.getId(),
-          HttpStatus.CREATED);
-    } catch (IllegalArgumentException exception) {
-      log.error("Erro ao processar transacao: {}", exception.getMessage());
-      HttpStatus status = exception.getMessage().contains("Limite de transações")
-          ? HttpStatus.TOO_MANY_REQUESTS
-          : HttpStatus.BAD_REQUEST;
-      return new ResponseEntity("Erro: " + exception.getMessage(), status);
+      log.info("Transacao processada com sucesso" + " ID: " + request.getId());
+      return new ResponseEntity(transacaoService.newTrade(request), HttpStatus.CREATED);
     } catch (Exception exception) {
       log.error("Erro ao processar transacao: {}", exception.getMessage());
       return new ResponseEntity("Erro: " + exception.getMessage(), HttpStatus.BAD_REQUEST);
     }
-
   }
 
-  @DeleteMapping("/delete/{id}")
-  public ResponseEntity<String> delete(@PathVariable Long id) {
+  // @DeleteMapping("/delete/{id}")
+  // public ResponseEntity<String> delete(@PathVariable Long id) {
 
-    try {
-      transacaoRepository.deleteDataID(id);
-      log.info("Registro de transacao deletado com sucesso ID: {}", id);
-      return new ResponseEntity("Registro de transacao deletado com sucesso ID: " + id, HttpStatus.OK);
-    } catch (Exception exception) {
-      log.error("Erro ao deletar transacoes: {}", exception.getMessage());
-      return new ResponseEntity("Erro: " + exception.getMessage(), HttpStatus.BAD_REQUEST);
-    }
+  // try {
+  // transacaoRepository.deleteDataID(id);
+  // log.info("Registro de transacao deletado com sucesso ID: {}", id);
+  // return new ResponseEntity("Registro de transacao deletado com sucesso ID: " +
+  // id, HttpStatus.OK);
+  // } catch (Exception exception) {
+  // log.error("Erro ao deletar transacoes: {}", exception.getMessage());
+  // return new ResponseEntity("Erro: " + exception.getMessage(),
+  // HttpStatus.BAD_REQUEST);
+  // }
 
-  }
+  // }
 
   @GetMapping()
   public ResponseEntity<?> findAll() {
