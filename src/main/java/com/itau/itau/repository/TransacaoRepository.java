@@ -57,4 +57,12 @@ public class TransacaoRepository {
 
   }
 
+  public TransacaoRequest findById(Long id) {
+    return transacaoList.stream()
+        .filter(transacao -> transacao.getId().equals(id))
+        .findFirst()
+        .orElseThrow(() -> new IllegalArgumentException("Transacao com ID " + id + " nao encontrada."));
+
+  }
+
 }

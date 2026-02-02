@@ -76,4 +76,16 @@ public class TransacoesController {
     }
 
   }
+
+  @GetMapping("/buscar/{id}")
+  public ResponseEntity<String> findById(@PathVariable Long id) {
+    try {
+      log.info("Transacao recuperada com sucesso ID: {}", id);
+      return new ResponseEntity(transacaoRepository.findById(id), HttpStatus.OK);
+    } catch (Exception exception) {
+      log.error("Erro ao recuperar transacao: {}", exception.getMessage());
+      return new ResponseEntity("Erro: " + exception.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+  }
+
 }
