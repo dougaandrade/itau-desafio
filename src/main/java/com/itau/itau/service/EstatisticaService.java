@@ -4,6 +4,7 @@ import java.util.DoubleSummaryStatistics;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.itau.itau.dto.response.EstatisticaResponse;
 import com.itau.itau.model.EstatisticaModel;
@@ -20,6 +21,7 @@ public class EstatisticaService {
   private final TransacaoRepository transacaoRepository;
   private final EstatisticaRepository estatisticaRepository;
 
+  @Transactional
   public EstatisticaResponse obterEstatisticas() {
     List<TransacaoModel> transacoes = transacaoRepository.findAll();
 

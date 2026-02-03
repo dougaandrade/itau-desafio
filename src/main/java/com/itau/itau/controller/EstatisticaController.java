@@ -21,15 +21,8 @@ public class EstatisticaController {
 
   @GetMapping
   public ResponseEntity<EstatisticaResponse> obterEstatisticas() {
-    try {
-      EstatisticaResponse estatistica = estatisticaService.obterEstatisticas();
-      log.info("Estatisticas recuperadas com sucesso.");
-      return ResponseEntity.ok(estatistica);
-    } catch (Exception exception) {
-      log.error("Erro ao recuperar estatisticas: {}", exception.getMessage());
-      return ResponseEntity.badRequest().build();
-    }
-
+    EstatisticaResponse estatistica = estatisticaService.obterEstatisticas();
+    log.info("Estatisticas recuperadas com sucesso.");
+    return ResponseEntity.ok(estatistica);
   }
-
 }
