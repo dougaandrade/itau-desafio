@@ -2,7 +2,7 @@ package com.itau.itau.docs;
 
 import org.springframework.http.ResponseEntity;
 
-import com.itau.itau.request.TransacaoRequest;
+import com.itau.itau.dto.request.TransacaoRequest;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;

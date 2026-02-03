@@ -2,8 +2,9 @@ package com.itau.itau.mapper;
 
 import org.springframework.stereotype.Component;
 
+import com.itau.itau.dto.request.TransacaoRequest;
 import com.itau.itau.model.TransacaoModel;
-import com.itau.itau.request.TransacaoRequest;
+
 
 @Component
 public class TransacaoMapper {

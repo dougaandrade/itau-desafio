@@ -1,4 +1,4 @@
-package com.itau.itau.request;
+package com.itau.itau.dto.request;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

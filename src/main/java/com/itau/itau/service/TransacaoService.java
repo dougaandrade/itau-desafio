@@ -5,11 +5,11 @@ import java.time.LocalDateTime;
 
 import org.springframework.stereotype.Service;
 
+import com.itau.itau.dto.request.TransacaoRequest;
 import com.itau.itau.mapper.TransacaoMapper;
 import com.itau.itau.model.TransacaoModel;
 import com.itau.itau.properties.TransacaoProperties;
 import com.itau.itau.repository.TransacaoRepository;
-import com.itau.itau.request.TransacaoRequest;
 
 import lombok.AllArgsConstructor;
 
@@ -22,62 +22,15 @@ public class TransacaoService {
   private final TransacaoMapper transacaoMapper;
 
   public TransacaoRequest newTrade(TransacaoRequest transacaoRequest) {
-    validarTransacao(transacaoRequest);
-    TransacaoModel transacao = transacaoMapper.mapToModel(transacaoRequest);
-    TransacaoModel transacaoSalva = transacaoRepository.save(transacao);
-    return transacaoMapper.mapToRequest(transacaoSalva);
+    try {
+      validarTransacao(transacaoRequest);
+      validarRateLimit();
+      TransacaoModel transacaoSalva = transacaoRepository.save(transacaoMapper.mapToModel(transacaoRequest));
+      return transacaoMapper.mapToRequest(transacaoSalva);
+    } catch (Exception exception) {
+      throw new IllegalArgumentException("Erro ao processar transacao: " + exception.getMessage());
+    }
   }
-
-  // public TransacaoRequest deleteDataID(Long id) {
-
-  // return transacaoList.stream()
-  // .filter(transacao -> transacao.getId().equals(id))
-  // .findFirst()
-  // .map(transacao -> {
-  // transacaoList.remove(transacao);
-  // return transacao;
-  // })
-  // .orElseThrow(() -> new IllegalArgumentException("Transacao com ID " + id + "
-  // nao encontrada."));
-  // }
-
-  // public List<TransacaoRequest> findAll() {
-  // return List.copyOf(transacaoList);
-  // }
-
-  // public Integer contarTransacoesUltimoMinuto() {
-  // return (int) transacaoList.stream()
-  // .filter(transacao ->
-  // transacao.getDataHora().isAfter(LocalDateTime.now().minusMinutes(1)))
-  // .count();
-  // }
-
-  // public EstatisticaResponse obterEstatisticas() {
-
-  // if (transacaoList.isEmpty()) {
-  // return new EstatisticaResponse(0L, 0.0, 0.0, 0.0, 0.0);
-  // }
-
-  // final var summary = transacaoList.stream()
-  // .filter(transacao ->
-  // transacao.getDataHora().isAfter(LocalDateTime.now().minusMinutes(1)))
-  // .mapToDouble(transacao -> transacao.getValor().doubleValue())
-  // .summaryStatistics();
-
-  // return new EstatisticaResponse(summary.getCount(), summary.getAverage(),
-  // summary.getMax(),
-  // summary.getMin(), summary.getSum());
-
-  // }
-
-  // public TransacaoRequest findById(Long id) {
-  // return transacaoList.stream()
-  // .filter(transacao -> transacao.getId().equals(id))
-  // .findFirst()
-  // .orElseThrow(() -> new IllegalArgumentException("Transacao com ID " + id + "
-  // nao encontrada."));
-
-  // }
 
   private void validarTransacao(TransacaoRequest transacaoRequest) {
 
@@ -99,25 +52,18 @@ public class TransacaoService {
           String.format("Valor da transação (%.2f) é maior que o permitido (%.2f).",
               transacaoRequest.getValor(), transacaoProperties.valorMaximoPorTransacao()));
     }
+
     transacaoRequest.setDataHora(LocalDateTime.now());
 
   }
 
-  private void validarRateLimit(Integer quantidadeTransacoesUltimoMinuto) {
-    if (transacaoProperties.limitePorMinuto() != null &&
-        transacaoProperties.limitePorMinuto() > 0 &&
-        quantidadeTransacoesUltimoMinuto >= transacaoProperties.limitePorMinuto()) {
-      throw new IllegalArgumentException(
-          String.format("Limite de transações por minuto excedido. Limite: %d, Atual: %d",
-              transacaoProperties.limitePorMinuto(), quantidadeTransacoesUltimoMinuto));
+  private void validarRateLimit() {
+    Long quantidadeTransacoesUltimoMinuto = transacaoRepository.findAll().stream()
+        .filter(transacao -> transacao.getDataHora().isAfter(LocalDateTime.now().minusMinutes(2)))
+        .count();
+    if (quantidadeTransacoesUltimoMinuto >= transacaoProperties.limitePorMinuto()) {
+      throw new IllegalArgumentException("Limite de transações por minuto excedido.");
     }
-  }
-
-  private boolean isTransacaoValida(LocalDateTime dataHoraTransacao,
-      LocalDateTime horaAtual) {
-    LocalDateTime limiteInferior = horaAtual.minusDays(1);
-    return !dataHoraTransacao.isBefore(limiteInferior) &&
-        !dataHoraTransacao.isAfter(horaAtual);
   }
 
 }
