@@ -127,9 +127,9 @@ java -jar target/itau-0.0.1-SNAPSHOT.jar
 
 4️⃣ **Acesse a aplicação**
 
-- API: http://localhost:8080
-- Swagger UI: http://localhost:8080/swagger-ui.html
-- Actuator: http://localhost:8080/actuator
+- API: <http://localhost:8080>
+- Swagger UI: <http://localhost:8080/swagger-ui.html>
+- Actuator: <http://localhost:8080/actuator>
 
 ---
 

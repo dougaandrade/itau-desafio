@@ -31,9 +31,13 @@ public class TransacoesController {
 
   @PostMapping
   public ResponseEntity<TransacaoRequest> create(@Valid @RequestBody TransacaoRequest request) {
-    TransacaoRequest response = transacaoService.newTrade(request);
-    log.info("Transacao criada com sucesso: {}", response);
-    return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    try {
+      TransacaoRequest response = transacaoService.newTrade(request);
+      log.info("Transacao criada com sucesso: {}", response);
+      return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    } finally {
+      log.info("Request de criação de transação processado.");
+    }
   }
 
   @GetMapping
