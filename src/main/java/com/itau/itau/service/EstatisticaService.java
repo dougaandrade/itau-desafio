@@ -18,34 +18,34 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class EstatisticaService {
 
-  private final TransacaoRepository transacaoRepository;
-  private final EstatisticaRepository estatisticaRepository;
+    private final TransacaoRepository transacaoRepository;
+    private final EstatisticaRepository estatisticaRepository;
 
-  @Transactional
-  public EstatisticaResponse obterEstatisticas() {
-    List<TransacaoModel> transacoes = transacaoRepository.findAll();
+    @Transactional
+    public EstatisticaResponse obterEstatisticas() {
+        List<TransacaoModel> transacoes = transacaoRepository.findAll();
 
-    DoubleSummaryStatistics stats = transacoes.stream()
-        .mapToDouble(transacao -> transacao.getValor().doubleValue())
-        .summaryStatistics();
+        DoubleSummaryStatistics stats = transacoes.stream()
+                .mapToDouble(transacao -> transacao.getValor().doubleValue())
+                .summaryStatistics();
 
-    EstatisticaModel estatistica = EstatisticaModel.builder()
-        .count(stats.getCount())
-        .avg(stats.getCount() > 0 ? stats.getAverage() : 0.0)
-        .max(stats.getCount() > 0 ? stats.getMax() : 0.0)
-        .min(stats.getCount() > 0 ? stats.getMin() : 0.0)
-        .sum(stats.getSum())
-        .transacoes(transacoes)
-        .build();
+        EstatisticaModel estatistica = EstatisticaModel.builder()
+                .count(stats.getCount())
+                .avg(stats.getCount() > 0 ? stats.getAverage() : 0.0)
+                .max(stats.getCount() > 0 ? stats.getMax() : 0.0)
+                .min(stats.getCount() > 0 ? stats.getMin() : 0.0)
+                .sum(stats.getSum())
+                .transacoes(transacoes)
+                .build();
 
-    estatisticaRepository.save(estatistica);
+        estatisticaRepository.save(estatistica);
 
-    return new EstatisticaResponse(
-        estatistica.getCount(),
-        estatistica.getAvg(),
-        estatistica.getMax(),
-        estatistica.getMin(),
-        estatistica.getSum(),
-        transacoes);
-  }
+        return new EstatisticaResponse(
+                estatistica.getCount(),
+                estatistica.getAvg(),
+                estatistica.getMax(),
+                estatistica.getMin(),
+                estatistica.getSum(),
+                transacoes);
+    }
 }
