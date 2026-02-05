@@ -5,3 +5,8 @@ transacoes:
   limitePorMinuto: 2
   valorMaximoPorTransacao: 1000000
   valorMinimoPorTransacao: 0.01
+
+api:
+  security:
+    token:
+      secret: ${JWT_SECRET:my-secret-key}

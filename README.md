@@ -24,8 +24,11 @@ _Sistema completo de gerenciamento de transações financeiras com análise esta
 
 Sistema REST API desenvolvido para gerenciar transações financeiras com suporte a:
 
-- ✅ Criação e consulta de transações
+- ✅ **Autenticação JWT** - Sistema completo de login e autorização
+- ✅ **Gerenciamento de Usuários** - Criação e autenticação de usuários
+- ✅ Criação e consulta de transações (protegido por autenticação)
 - ✅ Cálculo de estatísticas em tempo real
+- ✅ **Rastreamento de Usuários** - Transações associadas ao usuário autenticado
 - ✅ Rate limiting configurável
 - ✅ Validação de valores mínimos e máximos
 - ✅ Tratamento global de exceções
@@ -35,9 +38,17 @@ Sistema REST API desenvolvido para gerenciar transações financeiras com suport
 
 ## ✨ Características
 
+### 🔐 Autenticação e Segurança
+
+- **JWT Authentication**: Sistema completo de autenticação com JSON Web Tokens
+- **Spring Security**: Proteção de endpoints e gerenciamento de sessões stateless
+- **Roles e Permissões**: Sistema de roles (USER, ADMIN) configurável
+- **Password Encryption**: Senhas criptografadas com BCrypt
+- **SecurityFilter**: Validação automática de tokens em todas as requisições
+- **Rate Limiting**: Limite configurável de transações por minuto
+
 ### 🔐 Validações e Segurança
 
-- **Rate Limiting**: Limite configurável de transações por minuto
 - **Validação de Valores**: Valores mínimo e máximo configuráveis
 - **Tratamento de Erros**: GlobalExceptionHandler com respostas padronizadas
 - **Bean Validation**: Validações automáticas nos DTOs
@@ -66,8 +77,10 @@ Sistema REST API desenvolvido para gerenciar transações financeiras com suport
 - **Spring Boot 4.0.2**
   - Spring Web MVC
   - Spring Data JPA
+  - Spring Security
   - Spring Validation
   - Spring Actuator
+- **Auth0 JWT** - JSON Web Token
 - **Lombok** - Redução de boilerplate
 
 ### Banco de Dados
@@ -135,12 +148,67 @@ java -jar target/itau-0.0.1-SNAPSHOT.jar
 
 ## 🔌 Endpoints API
 
+### � Autenticação
+
+#### Login
+
+```http
+POST /auth
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "admin123"
+}
+```
+
+**Resposta:** `200 OK`
+
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}
+```
+
+#### Criar Novo Usuário
+
+```http
+POST /auth/create_user
+Content-Type: application/json
+
+{
+  "username": "novo_usuario",
+  "password": "senha123",
+  "role": "U"
+}
+```
+
+**Resposta:** `200 OK`
+
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}
+```
+
+**Roles disponíveis:**
+
+- `U` ou `ROLE_USER` - Usuário padrão
+- `A` ou `ROLE_ADMIN` - Administrador
+
+> 💡 **Nota**: O campo `role` é opcional. Se não especificado, será usado `ROLE_USER` por padrão.
+
+---
+
 ### 📝 Transações
+
+> ⚠️ **Todos os endpoints de transações requerem autenticação via Bearer Token**
 
 #### Criar Transação
 
 ```http
 POST /transacao
+Authorization: Bearer {seu_token_jwt}
 Content-Type: application/json
 
 {
@@ -154,7 +222,8 @@ Content-Type: application/json
 {
   "id": 1,
   "valor": 4500.0,
-  "dataHora": "2026-02-03T10:30:00"
+  "dataHora": "05/02/2026 10:30",
+  "usuario": "admin"
 }
 ```
 
@@ -162,6 +231,7 @@ Content-Type: application/json
 
 ```http
 GET /transacao
+Authorization: Bearer {seu_token_jwt}
 ```
 
 **Resposta:** `200 OK`
@@ -171,12 +241,14 @@ GET /transacao
   {
     "id": 1,
     "valor": 4500.0,
-    "dataHora": "2026-02-03T10:30:00"
+    "dataHora": "05/02/2026 10:30",
+    "usuario": "admin"
   },
   {
     "id": 2,
     "valor": 3200.5,
-    "dataHora": "2026-02-03T10:31:00"
+    "dataHora": "05/02/2026 10:31",
+    "usuario": "user1"
   }
 ]
 ```
@@ -185,6 +257,7 @@ GET /transacao
 
 ```http
 GET /transacao/{id}
+Authorization: Bearer {seu_token_jwt}
 ```
 
 **Resposta:** `200 OK`
@@ -193,16 +266,20 @@ GET /transacao/{id}
 {
   "id": 1,
   "valor": 4500.0,
-  "dataHora": "2026-02-03T10:30:00"
+  "dataHora": "05/02/2026 10:30",
+  "usuario": "admin"
 }
 ```
 
 ### 📊 Estatísticas
 
+> ⚠️ **Requer autenticação via Bearer Token**
+
 #### Obter Estatísticas
 
 ```http
 GET /estatistica
+Authorization: Bearer {seu_token_jwt}
 ```
 
 **Resposta:** `200 OK`
@@ -210,11 +287,18 @@ GET /estatistica
 ```json
 {
   "count": 10,
-  "avg": 3500.50,
-  "max": 8000.00,
-  "min": 1000.00,
-  "sum": 35005.00,
-  "transacoes": [...]
+  "avg": 3500.5,
+  "max": 8000.0,
+  "min": 1000.0,
+  "sum": 35005.0,
+  "transacoes": [
+    {
+      "id": 1,
+      "valor": 4500.0,
+      "dataHora": "05/02/2026 10:30",
+      "usuario": "admin"
+    }
+  ]
 }
 ```
 
@@ -225,13 +309,29 @@ GET /estatistica
 Edite `src/main/resources/application.yml`:
 
 ```yaml
+# Configurações de Segurança JWT
+api:
+  security:
+    token:
+      secret: ${JWT_SECRET:my-secret-key} # Use variável de ambiente em produção
+
+# Estatísticas
 estatistica:
   intervaloEmSegundos: 60 # Janela de tempo para estatísticas
 
+# Transações
 transacoes:
   limitePorMinuto: 2 # Rate limit
   valorMaximoPorTransacao: 1000000 # Valor máximo permitido
   valorMinimoPorTransacao: 0.01 # Valor mínimo permitido
+```
+
+### Variáveis de Ambiente
+
+Para produção, configure a secret JWT via variável de ambiente:
+
+```bash
+export JWT_SECRET="sua-chave-secreta-muito-segura-aqui"
 ```
 
 ---
@@ -252,6 +352,18 @@ A API retorna respostas padronizadas para erros:
 }
 ```
 
+### Exemplo: Autenticação
+
+```json
+{
+  "timestamp": "2026-02-03T10:30:00",
+  "status": 401,
+  "error": "Unauthorized",
+  "message": "Token inválido ou expirado",
+  "path": "/transacao"
+}
+```
+
 ### Códigos de Status
 
 | Código | Descrição                               |
@@ -259,6 +371,8 @@ A API retorna respostas padronizadas para erros:
 | `200`  | OK - Requisição bem-sucedida            |
 | `201`  | Created - Recurso criado                |
 | `400`  | Bad Request - Erro de validação         |
+| `401`  | Unauthorized - Não autenticado          |
+| `403`  | Forbidden - Sem permissão               |
 | `404`  | Not Found - Recurso não encontrado      |
 | `429`  | Too Many Requests - Rate limit excedido |
 | `500`  | Internal Server Error - Erro interno    |
@@ -287,17 +401,36 @@ http://localhost:8080/v3/api-docs
 
 ```
 src/main/java/com/itau/itau/
-├── config/              # Configurações (OpenAPI)
+├── config/              # Configurações (OpenAPI, Security, Filters)
+│   ├── SecurityConfig.java
+│   ├── SecurityFilter.java
+│   └── OpenApiConfiguration.java
 ├── controller/          # Controllers REST
+│   ├── AuthController.java
+│   ├── TransacoesController.java
+│   └── EstatisticaController.java
 ├── dto/                 # Data Transfer Objects
 │   ├── request/
 │   └── response/
+│       └── LoginResponse.java
+├── enums/               # Enumerações
+│   └── RoleEnum.java
 ├── exception/           # Exceptions customizadas e handlers
 ├── mapper/              # Conversores DTO ↔ Model
 ├── model/               # Entidades JPA
+│   ├── UserModel.java
+│   ├── TransacaoModel.java
+│   └── EstatisticaModel.java
 ├── properties/          # Configuration Properties
 ├── repository/          # Repositórios JPA
+│   ├── UserRepository.java
+│   ├── TransacaoRepository.java
+│   └── EstatisticaRepository.java
 └── service/             # Lógica de negócio
+    ├── TokenService.java
+    ├── UserService.java
+    ├── TransacaoService.java
+    └── EstatisticaService.java
 ```
 
 ---
@@ -377,7 +510,55 @@ Desenvolvido com ☕ e 💙
 
 ---
 
-## 🔗 Links Úteis
+## � Fluxo de Autenticação
+
+### 1. Criar Usuário (opcional)
+
+```bash
+curl -X POST http://localhost:8080/auth/create_user \
+  -H "Content-Type: application/json" \
+  -d '{"username": "meu_usuario", "password": "senha123"}'
+```
+
+### 2. Fazer Login
+
+```bash
+curl -X POST http://localhost:8080/auth \
+  -H "Content-Type: application/json" \
+  -d '{"username": "meu_usuario", "password": "senha123"}'
+```
+
+**Resposta:**
+
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}
+```
+
+### 3. Usar Token nas Requisições
+
+```bash
+# Criar transação
+curl -X POST http://localhost:8080/transacao \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." \
+  -H "Content-Type: application/json" \
+  -d '{"valor": 1500.00}'
+
+# Listar transações
+curl -X GET http://localhost:8080/transacao \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+
+# Ver estatísticas
+curl -X GET http://localhost:8080/estatistica \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+```
+
+> 💡 **Dica**: O token JWT tem validade de **1 hora**. Após expirar, faça login novamente.
+
+---
+
+## �🔗 Links Úteis
 
 - [Spring Boot Documentation](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/)
 - [Spring Data JPA](https://docs.spring.io/spring-data/jpa/docs/current/reference/html/)

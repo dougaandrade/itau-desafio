@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,8 +14,10 @@ import com.itau.itau.exception.TransacaoNotFoundException;
 import com.itau.itau.exception.TransacaoValidationException;
 import com.itau.itau.mapper.TransacaoMapper;
 import com.itau.itau.model.TransacaoModel;
+import com.itau.itau.model.UserModel;
 import com.itau.itau.properties.TransacaoProperties;
 import com.itau.itau.repository.TransacaoRepository;
+import com.itau.itau.repository.UserRepository;
 
 import lombok.AllArgsConstructor;
 
@@ -25,12 +28,22 @@ public class TransacaoService {
   private final TransacaoProperties transacaoProperties;
   private final TransacaoRepository transacaoRepository;
   private final TransacaoMapper transacaoMapper;
+  private final UserRepository userRepository;
 
   @Transactional
   public TransacaoRequest newTrade(TransacaoRequest transacaoRequest) {
     validarTransacao(transacaoRequest);
     validarRateLimit();
-    TransacaoModel transacaoSalva = transacaoRepository.save(transacaoMapper.mapToModel(transacaoRequest));
+
+    // Obter usuário autenticado
+    String username = SecurityContextHolder.getContext().getAuthentication().getName();
+    UserModel usuario = userRepository.findByUsername(username)
+        .orElseThrow(() -> new RuntimeException("Usuário não encontrado: " + username));
+
+    TransacaoModel transacao = transacaoMapper.mapToModel(transacaoRequest);
+    transacao.setUsuario(usuario);
+
+    TransacaoModel transacaoSalva = transacaoRepository.save(transacao);
     return transacaoMapper.mapToRequest(transacaoSalva);
   }
 
