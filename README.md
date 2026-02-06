@@ -123,6 +123,8 @@ cd itau
 docker compose up -d
 ```
 
+> 💡 **VS Code**: Use a task `Docker Compose Up` via `Ctrl+Shift+P` → "Tasks: Run Task"
+
 3️⃣ **Execute a aplicação**
 
 **Opção A: Com Maven Wrapper**
@@ -137,6 +139,10 @@ docker compose up -d
 ./mvnw clean package
 java -jar target/itau-0.0.1-SNAPSHOT.jar
 ```
+
+**Opção C: VS Code Task**
+
+Use a task `Run Application` ou `Start All (Docker + App)` para iniciar tudo de uma vez.
 
 4️⃣ **Acesse a aplicação**
 
@@ -470,7 +476,55 @@ docker exec -it itau-postgres psql -U postgres -d postgres
 
 ---
 
-## 📦 Build e Deploy
+## � VS Code Tasks
+
+O projeto inclui tasks pré-configuradas para VS Code em `.vscode/tasks.json`:
+
+| Task | Descrição |
+| ---- | --------- |
+| **Run Application** | Executa a aplicação via `./mvnw spring-boot:run` |
+| **Docker Compose Up** | Inicia os containers em background |
+| **Docker Compose Down** | Para e remove os containers |
+| **Docker Compose Logs** | Mostra os logs dos containers |
+| **Start All (Docker + App)** | Inicia Docker Compose e depois a aplicação |
+
+### Como usar
+
+1. Abra o Command Palette: `Ctrl+Shift+P`
+2. Digite: `Tasks: Run Task`
+3. Selecione a task desejada
+
+---
+
+## 📮 Postman Collection
+
+O projeto inclui uma coleção Postman pronta para importar:
+
+**Arquivo:** `itau-api-collection.json`
+
+### Funcionalidades
+
+- ✅ Variável `{{baseUrl}}` configurada como `http://localhost:8080`
+- ✅ Token JWT salvo automaticamente após Login ou Criar Usuário
+- ✅ Autenticação Bearer já configurada nas rotas protegidas
+
+### Como importar
+
+1. Abra o Postman
+2. Clique em **File → Import**
+3. Selecione o arquivo `itau-api-collection.json`
+4. Execute **Login** ou **Criar Usuário** primeiro para obter o token
+
+### Arquivo de Rotas
+
+Para referência rápida, consulte o arquivo `rotas-api.txt` que contém:
+- Todas as rotas da API com descrições
+- Exemplos de request/response JSON
+- Comandos curl para teste
+
+---
+
+## �📦 Build e Deploy
 
 ### Build do Projeto
 
