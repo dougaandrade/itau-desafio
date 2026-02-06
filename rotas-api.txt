@@ -1,0 +1,180 @@
+===============================================================================
+                         API ITAU - ROTAS E EXEMPLOS JSON
+===============================================================================
+
+BASE URL: http://localhost:8080
+
+===============================================================================
+                              AUTENTICAÇÃO
+===============================================================================
+
+-------------------------------------------------------------------------------
+POST /auth - Login
+-------------------------------------------------------------------------------
+Descrição: Autenticar usuário e obter token JWT
+
+Request:
+{
+  "username": "usuario",
+  "password": "senha123"
+}
+
+Response (200 OK):
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}
+
+Response (401 Unauthorized): Sem body
+
+-------------------------------------------------------------------------------
+POST /auth/create_user - Criar Usuário
+-------------------------------------------------------------------------------
+Descrição: Criar novo usuário e retornar token JWT
+
+Request:
+{
+  "username": "novo_usuario",
+  "password": "senha123",
+  "role": "ROLE_USER"
+}
+
+Roles disponíveis: ROLE_USER, ROLE_ADMIN
+
+Response (200 OK):
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}
+
+Response (400 Bad Request): Sem body (usuário já existe ou erro)
+
+===============================================================================
+                              TRANSAÇÕES
+===============================================================================
+Nota: Todas as rotas de transação requerem autenticação via Bearer Token
+Header: Authorization: Bearer <token>
+
+-------------------------------------------------------------------------------
+POST /transacao - Criar Transação
+-------------------------------------------------------------------------------
+Descrição: Criar uma nova transação
+
+Request:
+{
+  "valor": 150.50,
+  "dataHora": "06/02/2026 14:30"
+}
+
+Response (201 Created):
+{
+  "id": 1,
+  "valor": 150.50,
+  "dataHora": "06/02/2026 14:30"
+}
+
+Response (422 Unprocessable Entity): Validação falhou
+
+-------------------------------------------------------------------------------
+GET /transacao - Listar Todas Transações
+-------------------------------------------------------------------------------
+Descrição: Retorna todas as transações do usuário autenticado
+
+Response (200 OK):
+[
+  {
+    "id": 1,
+    "valor": 150.50,
+    "dataHora": "06/02/2026 14:30",
+    "usuario": "usuario"
+  },
+  {
+    "id": 2,
+    "valor": 200.00,
+    "dataHora": "06/02/2026 15:00",
+    "usuario": "usuario"
+  }
+]
+
+-------------------------------------------------------------------------------
+GET /transacao/{id} - Buscar Transação por ID
+-------------------------------------------------------------------------------
+Descrição: Retorna uma transação específica pelo ID
+
+Exemplo: GET /transacao/1
+
+Response (200 OK):
+{
+  "id": 1,
+  "valor": 150.50,
+  "dataHora": "06/02/2026 14:30",
+  "usuario": "usuario"
+}
+
+Response (404 Not Found): Transação não encontrada
+
+===============================================================================
+                              ESTATÍSTICAS
+===============================================================================
+Nota: Requer autenticação via Bearer Token
+Header: Authorization: Bearer <token>
+
+-------------------------------------------------------------------------------
+GET /estatistica - Obter Estatísticas
+-------------------------------------------------------------------------------
+Descrição: Retorna estatísticas das transações recentes
+
+Response (200 OK):
+{
+  "count": 5,
+  "avg": 175.25,
+  "max": 300.00,
+  "min": 50.00,
+  "sum": 876.25,
+  "transacoes": [
+    {
+      "id": 1,
+      "valor": 150.50,
+      "dataHora": "06/02/2026 14:30",
+      "usuario": "usuario"
+    },
+    {
+      "id": 2,
+      "valor": 200.00,
+      "dataHora": "06/02/2026 15:00",
+      "usuario": "usuario"
+    }
+  ]
+}
+
+===============================================================================
+                          EXEMPLOS COM CURL
+===============================================================================
+
+# 1. Criar usuário
+curl -X POST http://localhost:8080/auth/create_user \
+  -H "Content-Type: application/json" \
+  -d '{"username": "usuario", "password": "senha123", "role": "ROLE_USER"}'
+
+# 2. Login
+curl -X POST http://localhost:8080/auth \
+  -H "Content-Type: application/json" \
+  -d '{"username": "usuario", "password": "senha123"}'
+
+# 3. Criar transação (substituir <TOKEN> pelo token obtido)
+curl -X POST http://localhost:8080/transacao \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <TOKEN>" \
+  -d '{"valor": 150.50, "dataHora": "06/02/2026 14:30"}'
+
+# 4. Listar transações
+curl -X GET http://localhost:8080/transacao \
+  -H "Authorization: Bearer <TOKEN>"
+
+# 5. Buscar transação por ID
+curl -X GET http://localhost:8080/transacao/1 \
+  -H "Authorization: Bearer <TOKEN>"
+
+# 6. Obter estatísticas
+curl -X GET http://localhost:8080/estatistica \
+  -H "Authorization: Bearer <TOKEN>"
+
+===============================================================================
