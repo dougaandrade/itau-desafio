@@ -83,7 +83,7 @@ public class TransacaoService {
     UserModel usuario = getAuthenticatedUser();
     
     Long quantidadeTransacoesUltimoMinuto = transacaoRepository.findByUsuario(usuario).stream()
-        .filter(transacao -> transacao.getDataHora().isAfter(LocalDateTime.now().minusMinutes(2)))
+        .filter(transacao -> transacao.getDataHora().isAfter(LocalDateTime.now().minusMinutes(1)))
         .count();
     if (quantidadeTransacoesUltimoMinuto >= transacaoProperties.limitePorMinuto()) {
       throw new RateLimitExceededException("Limite de transações por minuto excedido.");

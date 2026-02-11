@@ -19,52 +19,28 @@ public class GlobalExceptionHandler {
   public ResponseEntity<ErrorResponse> handleTransacaoNotFoundException(
       TransacaoNotFoundException ex, WebRequest request) {
     log.error("Transação não encontrada: {}", ex.getMessage());
-    ErrorResponse error = new ErrorResponse(
-        LocalDateTime.now(),
-        HttpStatus.NOT_FOUND.value(),
-        "Not Found",
-        ex.getMessage(),
-        request.getDescription(false).replace("uri=", ""));
-    return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    return createErrorResponse(ex.getMessage(), HttpStatus.NOT_FOUND, "Not Found", request);
   }
 
   @ExceptionHandler(UserNotFoundException.class)
   public ResponseEntity<ErrorResponse> handleUserNotFoundException(
       UserNotFoundException ex, WebRequest request) {
     log.error("Usuário não encontrado: {}", ex.getMessage());
-    ErrorResponse error = new ErrorResponse(
-        LocalDateTime.now(),
-        HttpStatus.NOT_FOUND.value(),
-        "Not Found",
-        ex.getMessage(),
-        request.getDescription(false).replace("uri=", ""));
-    return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    return createErrorResponse(ex.getMessage(), HttpStatus.NOT_FOUND, "Not Found", request);
   }
 
   @ExceptionHandler(TransacaoValidationException.class)
   public ResponseEntity<ErrorResponse> handleTransacaoValidationException(
       TransacaoValidationException ex, WebRequest request) {
     log.error("Erro de validação: {}", ex.getMessage());
-    ErrorResponse error = new ErrorResponse(
-        LocalDateTime.now(),
-        HttpStatus.BAD_REQUEST.value(),
-        "Bad Request",
-        ex.getMessage(),
-        request.getDescription(false).replace("uri=", ""));
-    return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    return createErrorResponse(ex.getMessage(), HttpStatus.BAD_REQUEST, "Bad Request", request);
   }
 
   @ExceptionHandler(RateLimitExceededException.class)
   public ResponseEntity<ErrorResponse> handleRateLimitExceededException(
       RateLimitExceededException ex, WebRequest request) {
     log.error("Rate limit excedido: {}", ex.getMessage());
-    ErrorResponse error = new ErrorResponse(
-        LocalDateTime.now(),
-        HttpStatus.TOO_MANY_REQUESTS.value(),
-        "Too Many Requests",
-        ex.getMessage(),
-        request.getDescription(false).replace("uri=", ""));
-    return new ResponseEntity<>(error, HttpStatus.TOO_MANY_REQUESTS);
+    return createErrorResponse(ex.getMessage(), HttpStatus.TOO_MANY_REQUESTS, "Too Many Requests", request);
   }
 
   @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -76,25 +52,28 @@ public class GlobalExceptionHandler {
         .orElse("Erro de validação");
 
     log.error("Erro de validação de campos: {}", message);
-    ErrorResponse error = new ErrorResponse(
-        LocalDateTime.now(),
-        HttpStatus.BAD_REQUEST.value(),
-        "Bad Request",
-        message,
-        request.getDescription(false).replace("uri=", ""));
-    return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    return createErrorResponse(message, HttpStatus.BAD_REQUEST, "Bad Request", request);
   }
 
   @ExceptionHandler(Exception.class)
   public ResponseEntity<ErrorResponse> handleGlobalException(
       Exception ex, WebRequest request) {
     log.error("Erro inesperado: {}", ex.getMessage(), ex);
-    ErrorResponse error = new ErrorResponse(
-        LocalDateTime.now(),
-        HttpStatus.INTERNAL_SERVER_ERROR.value(),
-        "Internal Server Error",
+    return createErrorResponse(
         "Erro interno no servidor. Por favor, tente novamente mais tarde.",
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        "Internal Server Error",
+        request);
+  }
+
+  private ResponseEntity<ErrorResponse> createErrorResponse(
+      String message, HttpStatus status, String error, WebRequest request) {
+    ErrorResponse errorResponse = new ErrorResponse(
+        LocalDateTime.now(),
+        status.value(),
+        error,
+        message,
         request.getDescription(false).replace("uri=", ""));
-    return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+    return new ResponseEntity<>(errorResponse, status);
   }
 }
