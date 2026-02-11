@@ -4,6 +4,12 @@
 
 BASE URL: http://localhost:8080
 
+⚠️  IMPORTANTE:
+- Todas as requisições devem usar Content-Type: application/json
+- Endpoints de transações e estatísticas requerem autenticação JWT
+- Token JWT deve ser incluído no header: Authorization: Bearer <token>
+- Tokens são obtidos via login (/auth) ou criação de usuário (/auth/create_user)
+
 ===============================================================================
                               AUTENTICAÇÃO
 ===============================================================================

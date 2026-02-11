@@ -49,9 +49,11 @@ Sistema REST API desenvolvido para gerenciar transações financeiras com suport
 
 ### 🔐 Validações e Segurança
 
+- **Validação de Content-Type**: Aceita apenas `application/json` (retorna 415 se incorreto)
 - **Validação de Valores**: Valores mínimo e máximo configuráveis
 - **Tratamento de Erros**: GlobalExceptionHandler com respostas padronizadas
 - **Bean Validation**: Validações automáticas nos DTOs
+- **Mensagens de Erro**: Respostas em português com código HTTP apropriado
 
 ### 📊 Estatísticas
 
@@ -153,6 +155,12 @@ Use a task `Run Application` ou `Start All (Docker + App)` para iniciar tudo de 
 ---
 
 ## 🔌 Endpoints API
+
+> **⚠️ IMPORTANTE**:
+>
+> - Todas as requisições devem usar `Content-Type: application/json`
+> - Endpoints protegidos requerem o header `Authorization: Bearer <token>`
+> - Obtenha o token através de `/auth` ou `/auth/create_user`
 
 ### � Autenticação
 
@@ -480,13 +488,13 @@ docker exec -it itau-postgres psql -U postgres -d postgres
 
 O projeto inclui tasks pré-configuradas para VS Code em `.vscode/tasks.json`:
 
-| Task | Descrição |
-| ---- | --------- |
-| **Run Application** | Executa a aplicação via `./mvnw spring-boot:run` |
-| **Docker Compose Up** | Inicia os containers em background |
-| **Docker Compose Down** | Para e remove os containers |
-| **Docker Compose Logs** | Mostra os logs dos containers |
-| **Start All (Docker + App)** | Inicia Docker Compose e depois a aplicação |
+| Task                         | Descrição                                        |
+| ---------------------------- | ------------------------------------------------ |
+| **Run Application**          | Executa a aplicação via `./mvnw spring-boot:run` |
+| **Docker Compose Up**        | Inicia os containers em background               |
+| **Docker Compose Down**      | Para e remove os containers                      |
+| **Docker Compose Logs**      | Mostra os logs dos containers                    |
+| **Start All (Docker + App)** | Inicia Docker Compose e depois a aplicação       |
 
 ### Como usar
 
@@ -518,6 +526,7 @@ O projeto inclui uma coleção Postman pronta para importar:
 ### Arquivo de Rotas
 
 Para referência rápida, consulte o arquivo `rotas-api.txt` que contém:
+
 - Todas as rotas da API com descrições
 - Exemplos de request/response JSON
 - Comandos curl para teste

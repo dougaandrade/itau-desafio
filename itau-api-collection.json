@@ -2,7 +2,7 @@
   "info": {
     "_postman_id": "itau-api-collection",
     "name": "Itau API",
-    "description": "Coleção de endpoints da API Itau",
+    "description": "Sistema REST API para gerenciamento de transações financeiras com autenticação JWT e análise estatística em tempo real.\n\nCARACTERÍSTICAS PRINCIPAIS:\n- 🔐 Autenticação e autorização com JWT (JSON Web Token)\n- 👤 Sistema completo de usuários com roles (ROLE_USER, ROLE_ADMIN)\n- 💰 Criação e consulta de transações financeiras vinculadas a usuários\n- 📊 Cálculo automático de estatísticas (count, avg, max, min, sum)\n- ⏱️ Rate limiting configurável (limite de transações por minuto)\n- ✅ Validação de valores mínimos e máximos por transação\n- 🛡️ Tratamento global de exceções com respostas padronizadas\n- 🗄️ Persistência em PostgreSQL com relacionamentos JPA\n- 📖 Documentação OpenAPI/Swagger integrada\n- 📈 Histórico de snapshots estatísticos\n\nTECNOLOGIAS:\n- Java 17\n- Spring Boot 4.0.2 (Web MVC, Data JPA, Security, Validation, Actuator)\n- Spring Security com JWT\n- PostgreSQL (Docker Compose)\n- Hibernate/JPA com relacionamentos entity\n- Lombok\n- SpringDoc OpenAPI 2.6.0\n- Maven Wrapper\n\nARQUITETURA:\nClean Architecture com separação clara de responsabilidades:\n- Controllers REST para endpoints (Auth, Transações, Estatísticas)\n- Services com lógica de negócio (User, Token, Transação, Estatística)\n- Repositories para acesso a dados\n- DTOs para transferência de dados (Request/Response)\n- Mappers para conversão entre camadas\n- Exception handlers globais (@RestControllerAdvice)\n- Configuration Properties para configurações externalizadas\n- Security Filters para autenticação JWT\n- User Details Service para gerenciamento de usuários\n\nSEGURANÇA E AUTENTICAÇÃO:\n- JWT (JSON Web Token) para autenticação stateless\n- BCrypt para hash de senhas\n- Spring Security com SecurityFilterChain\n- Security Context para acesso ao usuário autenticado\n- CORS configurado\n- Endpoints públicos: /auth, /auth/create_user\n- Endpoints protegidos: /transacao/**, /estatistica/**\n- Roles: ROLE_USER (padrão), ROLE_ADMIN\n- Bearer Token Authentication (Authorization: Bearer <token>)\n\nCONFIGURAÇÕES:\n- Intervalo personalizável para cálculo de estatísticas (padrão: 60s)\n- Rate limiting ajustável (padrão: 2 transações/minuto)\n- Valores mínimo (0.01) e máximo (1000000) configuráveis\n- Suporte a múltiplos perfis Spring (dev, prod)\n- JWT secret key configurável\n- Content-Type: application/json obrigatório\n\nPRINCIPAIS ENDPOINTS:\nAutenticação (Públicos):\n- POST /auth - Login e obtenção de token JWT\n- POST /auth/create_user - Criar novo usuário e obter token\n\nTransações (Requer autenticação):\n- POST /transacao - Criar nova transação (vinculada ao usuário autenticado)\n- GET /transacao - Listar todas as transações do usuário autenticado\n- GET /transacao/{id} - Buscar transação por ID\n- GET /transacao/user/{id} - Buscar transações por ID do usuário\n\nEstatísticas (Requer autenticação):\n- GET /estatistica - Obter estatísticas calculadas\n\nVALIDAÇÕES E SEGURANÇA:\n- Bean Validation nos DTOs (@NotNull, @Positive, @NotBlank, etc.)\n- Validação de Content-Type (aceita apenas application/json)\n- Rate limiting para prevenir abuso\n- Validações customizadas de regras de negócio\n- Verificação de autorização por usuário\n- Tratamento de erros HTTP padronizado (400, 401, 404, 415, 429, 500)\n- Mensagens de erro em português\n\nOBSERVABILIDADE:\n- Spring Boot Actuator para métricas\n- Swagger UI para documentação interativa\n- Logs estruturados com SLF4J\n- Health checks\n- Auditoria de transações por usuário\n\nDEPLOYMENT:\n- Docker Compose para ambiente de desenvolvimento\n- Maven Wrapper incluído\n- Build otimizado com Spring Boot Maven Plugin\n- Pronto para containerização completa\n- VS Code tasks para build, run, docker e debug\n\nIDEAL PARA:\n- Sistemas bancários e fintechs com autenticação\n- Plataformas de pagamento seguras\n- Aplicações multi-tenant com isolamento por usuário\n- APIs REST com alta confiabilidade e segurança\n- Projetos que requerem auditoria de transações por usuário\n- Sistemas com análise estatística em tempo real\n\nPONTOS FORTES:\n- Código limpo e organizado\n- Segurança robusta com JWT e Spring Security\n- Testes unitários com JUnit e Mockito\n- Documentação completa (Swagger, Postman, README)\n- Fácil manutenção e extensibilidade\n- Configuração externa via YAML\n- Padrões de projeto aplicados (DTO, Mapper, Repository, Service)\n- Exception handling global\n- Versionamento Git\n\nCOMO USAR:\n1. Criar usuário: POST /auth/create_user\n2. Fazer login: POST /auth (retorna token JWT)\n3. Usar token nas requisições: Header 'Authorization: Bearer <token>'\n4. Criar transações: POST /transacao\n5. Consultar estatísticas: GET /estatistica",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
@@ -51,12 +51,12 @@
             },
             "url": {
               "raw": "{{baseUrl}}/auth",
-              "host": ["{{baseUrl}}"],
-              "path": ["auth"]
+              "host": [ "{{baseUrl}}" ],
+              "path": [ "auth" ]
             },
             "description": "Autenticar usuário e obter token JWT"
           },
-          "response": []
+          "response": [ ]
         },
         {
           "name": "Criar Usuário",
@@ -88,12 +88,12 @@
             },
             "url": {
               "raw": "{{baseUrl}}/auth/create_user",
-              "host": ["{{baseUrl}}"],
-              "path": ["auth", "create_user"]
+              "host": [ "{{baseUrl}}" ],
+              "path": [ "auth", "create_user" ]
             },
             "description": "Criar novo usuário. Roles disponíveis: ROLE_USER, ROLE_ADMIN"
           },
-          "response": []
+          "response": [ ]
         }
       ]
     },
@@ -126,12 +126,12 @@
             },
             "url": {
               "raw": "{{baseUrl}}/transacao",
-              "host": ["{{baseUrl}}"],
-              "path": ["transacao"]
+              "host": [ "{{baseUrl}}" ],
+              "path": [ "transacao" ]
             },
             "description": "Criar uma nova transação"
           },
-          "response": []
+          "response": [ ]
         },
         {
           "name": "Listar Transações",
@@ -147,15 +147,15 @@
               ]
             },
             "method": "GET",
-            "header": [],
+            "header": [ ],
             "url": {
               "raw": "{{baseUrl}}/transacao",
-              "host": ["{{baseUrl}}"],
-              "path": ["transacao"]
+              "host": [ "{{baseUrl}}" ],
+              "path": [ "transacao" ]
             },
             "description": "Retorna todas as transações do usuário autenticado"
           },
-          "response": []
+          "response": [ ]
         },
         {
           "name": "Buscar Transações por Usuário ID",
@@ -171,15 +171,15 @@
               ]
             },
             "method": "GET",
-            "header": [],
+            "header": [ ],
             "url": {
               "raw": "{{baseUrl}}/transacao/user/1",
-              "host": ["{{baseUrl}}"],
-              "path": ["transacao", "user", "1"]
+              "host": [ "{{baseUrl}}" ],
+              "path": [ "transacao", "user", "1" ]
             },
             "description": "Retorna todas as transações de um usuário específico"
           },
-          "response": []
+          "response": [ ]
         },
         {
           "name": "Buscar Transação por ID",
@@ -195,15 +195,15 @@
               ]
             },
             "method": "GET",
-            "header": [],
+            "header": [ ],
             "url": {
               "raw": "{{baseUrl}}/transacao/1",
-              "host": ["{{baseUrl}}"],
-              "path": ["transacao", "1"]
+              "host": [ "{{baseUrl}}" ],
+              "path": [ "transacao", "1" ]
             },
             "description": "Retorna uma transação específica pelo ID"
           },
-          "response": []
+          "response": [ ]
         }
       ]
     },
@@ -224,15 +224,15 @@
               ]
             },
             "method": "GET",
-            "header": [],
+            "header": [ ],
             "url": {
               "raw": "{{baseUrl}}/estatistica",
-              "host": ["{{baseUrl}}"],
-              "path": ["estatistica"]
+              "host": [ "{{baseUrl}}" ],
+              "path": [ "estatistica" ]
             },
             "description": "Retorna estatísticas das transações recentes"
           },
-          "response": []
+          "response": [ ]
         }
       ]
     }
