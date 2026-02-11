@@ -44,6 +44,13 @@ public class TransacoesController {
     return ResponseEntity.ok(transacoes);
   }
 
+  @GetMapping("/user/{id}")
+  public ResponseEntity<List<TransacaoModel>> buscarPorUserId(@PathVariable Long id) {
+    List<TransacaoModel> transacoes = transacaoService.findTradebyUserId(id);
+    log.info("Transacoes recuperadas com sucesso para o usuário ID: {}", id);
+    return ResponseEntity.ok(transacoes);
+  }
+
   @GetMapping("/{id}")
   public ResponseEntity<TransacaoModel> buscarPorId(@PathVariable Long id) {
     TransacaoModel transacao = transacaoService.findById(id);

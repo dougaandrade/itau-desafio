@@ -95,6 +95,31 @@ Response (200 OK):
 ]
 
 -------------------------------------------------------------------------------
+GET /transacao/user/{id} - Buscar Transações por Usuário ID
+-------------------------------------------------------------------------------
+Descrição: Retorna todas as transações de um usuário específico pelo ID do usuário
+
+Exemplo: GET /transacao/user/1
+
+Response (200 OK):
+[
+  {
+    "id": 1,
+    "valor": 150.50,
+    "dataHora": "06/02/2026 14:30",
+    "usuario": "usuario"
+  },
+  {
+    "id": 2,
+    "valor": 200.00,
+    "dataHora": "06/02/2026 15:00",
+    "usuario": "usuario"
+  }
+]
+
+Response (404 Not Found): Nenhuma transação encontrada para o usuário
+
+-------------------------------------------------------------------------------
 GET /transacao/{id} - Buscar Transação por ID
 -------------------------------------------------------------------------------
 Descrição: Retorna uma transação específica pelo ID
@@ -169,11 +194,15 @@ curl -X POST http://localhost:8080/transacao \
 curl -X GET http://localhost:8080/transacao \
   -H "Authorization: Bearer <TOKEN>"
 
-# 5. Buscar transação por ID
+# 5. Buscar transações por usuário ID
+curl -X GET http://localhost:8080/transacao/user/1 \
+  -H "Authorization: Bearer <TOKEN>"
+
+# 6. Buscar transação por ID
 curl -X GET http://localhost:8080/transacao/1 \
   -H "Authorization: Bearer <TOKEN>"
 
-# 6. Obter estatísticas
+# 7. Obter estatísticas
 curl -X GET http://localhost:8080/estatistica \
   -H "Authorization: Bearer <TOKEN>"
 

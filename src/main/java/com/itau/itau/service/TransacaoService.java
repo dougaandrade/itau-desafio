@@ -58,6 +58,15 @@ public class TransacaoService {
         .orElseThrow(() -> new TransacaoNotFoundException(id));
   }
 
+  @Transactional(readOnly = true)
+  public List<TransacaoModel> findTradebyUserId(Long userId) {
+    List<TransacaoModel> transacoes = transacaoRepository.findByUsuarioId(userId);
+    if (transacoes.isEmpty()) {
+      throw new TransacaoNotFoundException(userId);
+    }
+    return transacoes;
+  }
+
   private void validarTransacao(TransacaoRequest transacaoRequest) {
     if (transacaoRequest.getValor() == null) {
       throw new TransacaoValidationException("Valor da transação é obrigatório.");
