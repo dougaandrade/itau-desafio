@@ -129,7 +129,7 @@
               "host": ["{{baseUrl}}"],
               "path": ["transacao"]
             },
-            "description": "Criar uma nova transação"
+            "description": "Criar uma nova transação para o usuário autenticado"
           },
           "response": []
         },
@@ -153,7 +153,7 @@
               "host": ["{{baseUrl}}"],
               "path": ["transacao"]
             },
-            "description": "Retorna todas as transações do usuário autenticado"
+            "description": "Retorna todas as transações do usuário autenticado. NOTA: Somente transações do usuário autenticado são retornadas."
           },
           "response": []
         },
@@ -206,7 +206,7 @@
               "host": ["{{baseUrl}}"],
               "path": ["estatistica"]
             },
-            "description": "Retorna estatísticas das transações recentes"
+            "description": "Retorna estatísticas das transações do usuário autenticado. NOTA: Apenas transações do usuário autenticado são incluídas no cálculo."
           },
           "response": []
         }

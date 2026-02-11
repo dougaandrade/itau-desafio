@@ -53,10 +53,13 @@ Response (400 Bad Request): Sem body (usuário já existe ou erro)
 Nota: Todas as rotas de transação requerem autenticação via Bearer Token
 Header: Authorization: Bearer <token>
 
+IMPORTANTE: Todas as operações de transação são filtradas por usuário.
+Cada usuário só pode visualizar suas próprias transações.
+
 -------------------------------------------------------------------------------
 POST /transacao - Criar Transação
 -------------------------------------------------------------------------------
-Descrição: Criar uma nova transação
+Descrição: Criar uma nova transação para o usuário autenticado
 
 Request:
 {
@@ -77,6 +80,7 @@ Response (422 Unprocessable Entity): Validação falhou
 GET /transacao - Listar Todas Transações
 -------------------------------------------------------------------------------
 Descrição: Retorna todas as transações do usuário autenticado
+NOTA: Somente transações do usuário autenticado são retornadas
 
 Response (200 OK):
 [
@@ -117,10 +121,14 @@ Response (404 Not Found): Transação não encontrada
 Nota: Requer autenticação via Bearer Token
 Header: Authorization: Bearer <token>
 
+IMPORTANTE: Estatísticas calculadas apenas com as transações do usuário
+autenticado.
+
 -------------------------------------------------------------------------------
 GET /estatistica - Obter Estatísticas
 -------------------------------------------------------------------------------
-Descrição: Retorna estatísticas das transações recentes
+Descrição: Retorna estatísticas das transações do usuário autenticado
+NOTA: Apenas transações do usuário autenticado são incluídas no cálculo
 
 Response (200 OK):
 {
@@ -165,7 +173,7 @@ curl -X POST http://localhost:8080/transacao \
   -H "Authorization: Bearer <TOKEN>" \
   -d '{"valor": 150.50, "dataHora": "06/02/2026 14:30"}'
 
-# 4. Listar transações
+# 4. Listar transações (somente do usuário autenticado)
 curl -X GET http://localhost:8080/transacao \
   -H "Authorization: Bearer <TOKEN>"
 
@@ -173,7 +181,7 @@ curl -X GET http://localhost:8080/transacao \
 curl -X GET http://localhost:8080/transacao/1 \
   -H "Authorization: Bearer <TOKEN>"
 
-# 6. Obter estatísticas
+# 6. Obter estatísticas (somente do usuário autenticado)
 curl -X GET http://localhost:8080/estatistica \
   -H "Authorization: Bearer <TOKEN>"
 
