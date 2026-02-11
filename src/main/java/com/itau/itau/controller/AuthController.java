@@ -1,6 +1,7 @@
 package com.itau.itau.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -31,7 +32,7 @@ public class AuthController {
   @Autowired
   private UserService userService;
 
-  @PostMapping()
+  @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<LoginResponse> login(@RequestBody @Valid AuthDTO auth) {
     try {
       var usernamePasswordAuthToken = new UsernamePasswordAuthenticationToken(auth.username(), auth.password());
@@ -46,7 +47,7 @@ public class AuthController {
 
   }
 
-  @PostMapping("/create_user")
+  @PostMapping(value = "/create_user", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<LoginResponse> createUser(@RequestBody @Valid AuthDTO auth) {
     try {
       log.info("Requisição para criação de usuário: {}", auth.username());

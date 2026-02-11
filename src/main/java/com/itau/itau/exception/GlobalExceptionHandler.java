@@ -4,8 +4,10 @@ import java.time.LocalDateTime;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 
 import com.itau.itau.dto.response.ErrorResponse;
@@ -13,7 +15,24 @@ import com.itau.itau.dto.response.ErrorResponse;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@RestControllerAdvice
 public class GlobalExceptionHandler {
+
+  @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
+  public ResponseEntity<ErrorResponse> handleHttpMediaTypeNotSupported(
+      HttpMediaTypeNotSupportedException ex, WebRequest request) {
+    String message = String.format(
+        "Content-Type '%s' não é suportado. Use 'application/json'",
+        ex.getContentType());
+    log.error("Media type não suportado: {}", ex.getContentType());
+    ErrorResponse error = new ErrorResponse(
+        LocalDateTime.now(),
+        HttpStatus.UNSUPPORTED_MEDIA_TYPE.value(),
+        "Unsupported Media Type",
+        message,
+        request.getDescription(false).replace("uri=", ""));
+    return new ResponseEntity<>(error, HttpStatus.UNSUPPORTED_MEDIA_TYPE);
+  }
 
   @ExceptionHandler(TransacaoNotFoundException.class)
   public ResponseEntity<ErrorResponse> handleTransacaoNotFoundException(
