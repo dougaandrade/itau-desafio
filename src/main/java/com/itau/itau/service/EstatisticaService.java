@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.itau.itau.dto.response.EstatisticaResponse;
+import com.itau.itau.exception.UserNotFoundException;
 import com.itau.itau.model.EstatisticaModel;
 import com.itau.itau.model.TransacaoModel;
 import com.itau.itau.model.UserModel;
@@ -27,10 +28,7 @@ public class EstatisticaService {
 
     @Transactional
     public EstatisticaResponse obterEstatisticas() {
-        // Obter usuário autenticado
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        UserModel usuario = userRepository.findByUsername(username)
-            .orElseThrow(() -> new RuntimeException("Usuário não encontrado: " + username));
+        UserModel usuario = getAuthenticatedUser();
         
         List<TransacaoModel> transacoes = transacaoRepository.findByUsuario(usuario);
 
@@ -56,5 +54,11 @@ public class EstatisticaService {
                 estatistica.getMin(),
                 estatistica.getSum(),
                 transacoes);
+    }
+
+    private UserModel getAuthenticatedUser() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        return userRepository.findByUsername(username)
+            .orElseThrow(() -> new UserNotFoundException(username));
     }
 }

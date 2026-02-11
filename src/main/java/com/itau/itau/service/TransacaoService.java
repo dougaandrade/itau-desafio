@@ -12,6 +12,7 @@ import com.itau.itau.dto.request.TransacaoRequest;
 import com.itau.itau.exception.RateLimitExceededException;
 import com.itau.itau.exception.TransacaoNotFoundException;
 import com.itau.itau.exception.TransacaoValidationException;
+import com.itau.itau.exception.UserNotFoundException;
 import com.itau.itau.mapper.TransacaoMapper;
 import com.itau.itau.model.TransacaoModel;
 import com.itau.itau.model.UserModel;
@@ -35,10 +36,7 @@ public class TransacaoService {
     validarTransacao(transacaoRequest);
     validarRateLimit();
 
-    // Obter usuário autenticado
-    String username = SecurityContextHolder.getContext().getAuthentication().getName();
-    UserModel usuario = userRepository.findByUsername(username)
-        .orElseThrow(() -> new RuntimeException("Usuário não encontrado: " + username));
+    UserModel usuario = getAuthenticatedUser();
 
     TransacaoModel transacao = transacaoMapper.mapToModel(transacaoRequest);
     transacao.setUsuario(usuario);
@@ -49,11 +47,7 @@ public class TransacaoService {
 
   @Transactional(readOnly = true)
   public List<TransacaoModel> findAll() {
-    // Obter usuário autenticado
-    String username = SecurityContextHolder.getContext().getAuthentication().getName();
-    UserModel usuario = userRepository.findByUsername(username)
-        .orElseThrow(() -> new RuntimeException("Usuário não encontrado: " + username));
-    
+    UserModel usuario = getAuthenticatedUser();
     return transacaoRepository.findByUsuario(usuario);
   }
 
@@ -86,10 +80,7 @@ public class TransacaoService {
   }
 
   private void validarRateLimit() {
-    // Obter usuário autenticado
-    String username = SecurityContextHolder.getContext().getAuthentication().getName();
-    UserModel usuario = userRepository.findByUsername(username)
-        .orElseThrow(() -> new RuntimeException("Usuário não encontrado: " + username));
+    UserModel usuario = getAuthenticatedUser();
     
     Long quantidadeTransacoesUltimoMinuto = transacaoRepository.findByUsuario(usuario).stream()
         .filter(transacao -> transacao.getDataHora().isAfter(LocalDateTime.now().minusMinutes(2)))
@@ -97,6 +88,12 @@ public class TransacaoService {
     if (quantidadeTransacoesUltimoMinuto >= transacaoProperties.limitePorMinuto()) {
       throw new RateLimitExceededException("Limite de transações por minuto excedido.");
     }
+  }
+
+  private UserModel getAuthenticatedUser() {
+    String username = SecurityContextHolder.getContext().getAuthentication().getName();
+    return userRepository.findByUsername(username)
+        .orElseThrow(() -> new UserNotFoundException(username));
   }
 
 }

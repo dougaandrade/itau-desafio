@@ -28,6 +28,19 @@ public class GlobalExceptionHandler {
     return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
   }
 
+  @ExceptionHandler(UserNotFoundException.class)
+  public ResponseEntity<ErrorResponse> handleUserNotFoundException(
+      UserNotFoundException ex, WebRequest request) {
+    log.error("Usuário não encontrado: {}", ex.getMessage());
+    ErrorResponse error = new ErrorResponse(
+        LocalDateTime.now(),
+        HttpStatus.NOT_FOUND.value(),
+        "Not Found",
+        ex.getMessage(),
+        request.getDescription(false).replace("uri=", ""));
+    return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+  }
+
   @ExceptionHandler(TransacaoValidationException.class)
   public ResponseEntity<ErrorResponse> handleTransacaoValidationException(
       TransacaoValidationException ex, WebRequest request) {
