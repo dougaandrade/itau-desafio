@@ -49,7 +49,12 @@ public class TransacaoService {
 
   @Transactional(readOnly = true)
   public List<TransacaoModel> findAll() {
-    return transacaoRepository.findAll();
+    // Obter usuário autenticado
+    String username = SecurityContextHolder.getContext().getAuthentication().getName();
+    UserModel usuario = userRepository.findByUsername(username)
+        .orElseThrow(() -> new RuntimeException("Usuário não encontrado: " + username));
+    
+    return transacaoRepository.findByUsuario(usuario);
   }
 
   @Transactional(readOnly = true)
@@ -81,7 +86,12 @@ public class TransacaoService {
   }
 
   private void validarRateLimit() {
-    Long quantidadeTransacoesUltimoMinuto = transacaoRepository.findAll().stream()
+    // Obter usuário autenticado
+    String username = SecurityContextHolder.getContext().getAuthentication().getName();
+    UserModel usuario = userRepository.findByUsername(username)
+        .orElseThrow(() -> new RuntimeException("Usuário não encontrado: " + username));
+    
+    Long quantidadeTransacoesUltimoMinuto = transacaoRepository.findByUsuario(usuario).stream()
         .filter(transacao -> transacao.getDataHora().isAfter(LocalDateTime.now().minusMinutes(2)))
         .count();
     if (quantidadeTransacoesUltimoMinuto >= transacaoProperties.limitePorMinuto()) {

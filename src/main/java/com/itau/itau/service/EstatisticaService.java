@@ -3,14 +3,17 @@ package com.itau.itau.service;
 import java.util.DoubleSummaryStatistics;
 import java.util.List;
 
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.itau.itau.dto.response.EstatisticaResponse;
 import com.itau.itau.model.EstatisticaModel;
 import com.itau.itau.model.TransacaoModel;
+import com.itau.itau.model.UserModel;
 import com.itau.itau.repository.EstatisticaRepository;
 import com.itau.itau.repository.TransacaoRepository;
+import com.itau.itau.repository.UserRepository;
 
 import lombok.AllArgsConstructor;
 
@@ -20,10 +23,16 @@ public class EstatisticaService {
 
     private final TransacaoRepository transacaoRepository;
     private final EstatisticaRepository estatisticaRepository;
+    private final UserRepository userRepository;
 
     @Transactional
     public EstatisticaResponse obterEstatisticas() {
-        List<TransacaoModel> transacoes = transacaoRepository.findAll();
+        // Obter usuário autenticado
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        UserModel usuario = userRepository.findByUsername(username)
+            .orElseThrow(() -> new RuntimeException("Usuário não encontrado: " + username));
+        
+        List<TransacaoModel> transacoes = transacaoRepository.findByUsuario(usuario);
 
         DoubleSummaryStatistics stats = transacoes.stream()
                 .mapToDouble(transacao -> transacao.getValor().doubleValue())
