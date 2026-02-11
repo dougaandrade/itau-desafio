@@ -3,18 +3,16 @@ package com.itau.itau.service;
 import java.util.DoubleSummaryStatistics;
 import java.util.List;
 
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.itau.itau.dto.response.EstatisticaResponse;
-import com.itau.itau.exception.UserNotFoundException;
 import com.itau.itau.model.EstatisticaModel;
 import com.itau.itau.model.TransacaoModel;
 import com.itau.itau.model.UserModel;
 import com.itau.itau.repository.EstatisticaRepository;
 import com.itau.itau.repository.TransacaoRepository;
-import com.itau.itau.repository.UserRepository;
+import com.itau.itau.util.AuthenticationUtil;
 
 import lombok.AllArgsConstructor;
 
@@ -24,11 +22,11 @@ public class EstatisticaService {
 
     private final TransacaoRepository transacaoRepository;
     private final EstatisticaRepository estatisticaRepository;
-    private final UserRepository userRepository;
+    private final AuthenticationUtil authenticationUtil;
 
     @Transactional
     public EstatisticaResponse obterEstatisticas() {
-        UserModel usuario = getAuthenticatedUser();
+        UserModel usuario = authenticationUtil.getAuthenticatedUser();
         
         List<TransacaoModel> transacoes = transacaoRepository.findByUsuario(usuario);
 
@@ -54,11 +52,5 @@ public class EstatisticaService {
                 estatistica.getMin(),
                 estatistica.getSum(),
                 transacoes);
-    }
-
-    private UserModel getAuthenticatedUser() {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        return userRepository.findByUsername(username)
-            .orElseThrow(() -> new UserNotFoundException(username));
     }
 }
