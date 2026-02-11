@@ -1,5 +1,6 @@
 package com.itau.itau.repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,5 +13,7 @@ import com.itau.itau.model.UserModel;
 public interface TransacaoRepository extends JpaRepository<TransacaoModel, Long> {
 
   List<TransacaoModel> findByUsuario(UserModel usuario);
+
+  Long countByUsuarioAndDataHoraAfter(UserModel usuario, LocalDateTime dataHora);
 
 }

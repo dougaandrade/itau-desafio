@@ -66,6 +66,15 @@ public class GlobalExceptionHandler {
         request);
   }
 
+  /**
+   * Creates a standardized error response.
+   *
+   * @param message The error message to be returned to the client
+   * @param status The HTTP status code
+   * @param error The error type/category description
+   * @param request The web request that generated the error
+   * @return ResponseEntity containing the error response with appropriate HTTP status
+   */
   private ResponseEntity<ErrorResponse> createErrorResponse(
       String message, HttpStatus status, String error, WebRequest request) {
     ErrorResponse errorResponse = new ErrorResponse(

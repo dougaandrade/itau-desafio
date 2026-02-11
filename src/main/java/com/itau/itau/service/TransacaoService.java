@@ -80,9 +80,9 @@ public class TransacaoService {
   private void validarRateLimit() {
     UserModel usuario = authenticationUtil.getAuthenticatedUser();
     
-    Long quantidadeTransacoesUltimoMinuto = transacaoRepository.findByUsuario(usuario).stream()
-        .filter(transacao -> transacao.getDataHora().isAfter(LocalDateTime.now().minusMinutes(1)))
-        .count();
+    Long quantidadeTransacoesUltimoMinuto = transacaoRepository
+        .countByUsuarioAndDataHoraAfter(usuario, LocalDateTime.now().minusMinutes(1));
+    
     if (quantidadeTransacoesUltimoMinuto >= transacaoProperties.limitePorMinuto()) {
       throw new RateLimitExceededException("Limite de transações por minuto excedido.");
     }
