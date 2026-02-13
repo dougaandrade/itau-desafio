@@ -8,7 +8,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.itau.itau.dto.TransacaoDTO;
 import com.itau.itau.dto.request.TransacaoRequest;
+import com.itau.itau.dto.response.TransacaoResponse;
 import com.itau.itau.exception.RateLimitExceededException;
 import com.itau.itau.exception.TransacaoNotFoundException;
 import com.itau.itau.exception.TransacaoValidationException;
@@ -31,7 +33,7 @@ public class TransacaoService {
   private final UserRepository userRepository;
 
   @Transactional
-  public TransacaoRequest newTrade(TransacaoRequest transacaoRequest) {
+  public TransacaoResponse newTrade(TransacaoRequest transacaoRequest) {
     validarTransacao(transacaoRequest);
     validarRateLimit();
 
@@ -40,31 +42,35 @@ public class TransacaoService {
     UserModel usuario = userRepository.findByUsername(username)
         .orElseThrow(() -> new RuntimeException("Usuário não encontrado: " + username));
 
-    TransacaoModel transacao = transacaoMapper.mapToModel(transacaoRequest);
-    transacao.setUsuario(usuario);
-
+    TransacaoDTO dto = transacaoMapper.toDTO(transacaoRequest, usuario);
+    TransacaoModel transacao = transacaoMapper.toModel(dto);
     TransacaoModel transacaoSalva = transacaoRepository.save(transacao);
-    return transacaoMapper.mapToRequest(transacaoSalva);
+    return transacaoMapper.toResponse(transacaoSalva);
   }
 
   @Transactional(readOnly = true)
-  public List<TransacaoModel> findAll() {
-    return transacaoRepository.findAll();
+  public List<TransacaoResponse> findAll() {
+    return transacaoRepository.findAll().stream()
+        .map(transacaoMapper::toResponse)
+        .toList();
   }
 
   @Transactional(readOnly = true)
-  public TransacaoModel findById(Long id) {
-    return transacaoRepository.findById(id)
+  public TransacaoResponse findById(Long id) {
+    TransacaoModel transacao = transacaoRepository.findById(id)
         .orElseThrow(() -> new TransacaoNotFoundException(id));
+    return transacaoMapper.toResponse(transacao);
   }
 
   @Transactional(readOnly = true)
-  public List<TransacaoModel> findTradebyUserId(Long userId) {
+  public List<TransacaoResponse> findTradebyUserId(Long userId) {
     List<TransacaoModel> transacoes = transacaoRepository.findByUsuarioId(userId);
     if (transacoes.isEmpty()) {
       throw new TransacaoNotFoundException(userId);
     }
-    return transacoes;
+    return transacoes.stream()
+        .map(transacaoMapper::toResponse)
+        .toList();
   }
 
   private void validarTransacao(TransacaoRequest transacaoRequest) {

@@ -3,28 +3,29 @@ package com.itau.itau.mapper;
 import org.springframework.stereotype.Component;
 
 import com.itau.itau.dto.EstatisticaDTO;
-import com.itau.itau.model.EstatisticaModel;
+import com.itau.itau.dto.request.EstatisticaRequest;
+import com.itau.itau.dto.response.EstatisticaResponse;
 
 @Component
 public class EstatisticaMapper {
 
-  public EstatisticaDTO mapToDTO(long count, Double avg, Double max, Double min, Double sum) {
+  public EstatisticaDTO mapToResquest(EstatisticaRequest request) {
     return EstatisticaDTO.builder()
-        .count(count)
-        .avg(avg)
-        .max(max)
-        .min(min)
-        .sum(sum)
+        .count(request.count())
+        .avg(request.avg())
+        .max(request.max())
+        .min(request.min())
+        .sum(request.sum())
         .build();
   }
 
-  public EstatisticaDTO mapToRequestModel(EstatisticaModel model) {
+  public EstatisticaDTO mapToResponse(EstatisticaResponse response) {
     return EstatisticaDTO.builder()
-        .count(model.getCount())
-        .avg(model.getAvg())
-        .max(model.getMax())
-        .min(model.getMin())
-        .sum(model.getSum())
+        .count(response.getCount())
+        .avg(response.getAvg())
+        .max(response.getMax())
+        .min(response.getMin())
+        .sum(response.getSum())
         .build();
   }
 

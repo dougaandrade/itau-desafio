@@ -9,7 +9,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import com.itau.itau.dto.request.TransacaoRequest;
-import com.itau.itau.model.TransacaoModel;
+import com.itau.itau.dto.response.TransacaoResponse;
 import com.itau.itau.service.TransacaoService;
 
 import jakarta.validation.Valid;
@@ -26,30 +26,30 @@ public class TransacoesController {
   private final TransacaoService transacaoService;
 
   @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<TransacaoRequest> create(@Valid @RequestBody TransacaoRequest request) {
-    TransacaoRequest response = transacaoService.newTrade(request);
+  public ResponseEntity<TransacaoResponse> create(@Valid @RequestBody TransacaoRequest request) {
+    TransacaoResponse response = transacaoService.newTrade(request);
     log.info("Transacao criada com sucesso: {}", response);
     return ResponseEntity.status(HttpStatus.CREATED).body(response);
 
   }
 
   @GetMapping
-  public ResponseEntity<List<TransacaoModel>> allTransacoes() {
-    List<TransacaoModel> transacoes = transacaoService.findAll();
+  public ResponseEntity<List<TransacaoResponse>> allTransacoes() {
+    List<TransacaoResponse> transacoes = transacaoService.findAll();
     log.info("Transacoes recuperadas com sucesso");
     return ResponseEntity.ok(transacoes);
   }
 
   @GetMapping("/user/{id}")
-  public ResponseEntity<List<TransacaoModel>> buscarPorUserId(@PathVariable Long id) {
-    List<TransacaoModel> transacoes = transacaoService.findTradebyUserId(id);
+  public ResponseEntity<List<TransacaoResponse>> buscarPorUserId(@PathVariable Long id) {
+    List<TransacaoResponse> transacoes = transacaoService.findTradebyUserId(id);
     log.info("Transacoes recuperadas com sucesso para o usuário ID: {}", id);
     return ResponseEntity.ok(transacoes);
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<TransacaoModel> buscarPorId(@PathVariable Long id) {
-    TransacaoModel transacao = transacaoService.findById(id);
+  public ResponseEntity<TransacaoResponse> buscarPorId(@PathVariable Long id) {
+    TransacaoResponse transacao = transacaoService.findById(id);
     log.info("Transacao recuperada com sucesso ID: {}", id);
     return ResponseEntity.ok(transacao);
   }
