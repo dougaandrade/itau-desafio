@@ -233,6 +233,30 @@
             "description": "Retorna estatísticas das transações recentes"
           },
           "response": [ ]
+        },
+        {
+          "name": "Obter Estatísticas por Usuário",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [ ],
+            "url": {
+              "raw": "{{baseUrl}}/estatistica/1",
+              "host": [ "{{baseUrl}}" ],
+              "path": [ "estatistica", "1" ]
+            },
+            "description": "Retorna estatísticas das transações de um usuário específico"
+          },
+          "response": [ ]
         }
       ]
     }

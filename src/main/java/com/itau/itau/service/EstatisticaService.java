@@ -3,6 +3,7 @@ package com.itau.itau.service;
 import java.util.DoubleSummaryStatistics;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,6 +17,7 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class EstatisticaService {
 
+  @Autowired
   private final TransacaoRepository transacaoRepository;
 
   @Transactional
