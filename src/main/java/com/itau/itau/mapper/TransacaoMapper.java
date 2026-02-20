@@ -1,5 +1,7 @@
 package com.itau.itau.mapper;
 
+import java.util.Optional;
+
 import org.springframework.stereotype.Component;
 
 import com.itau.itau.dto.TransacaoDTO;
@@ -13,11 +15,11 @@ import com.itau.itau.model.UserModel;
 public class TransacaoMapper {
 
   // Request → DTO (isolamento na entrada)
-  public TransacaoDTO toDTO(TransacaoRequest request, UserModel usuario) {
+  public TransacaoDTO toDTO(TransacaoRequest request, UserModel userModel) {
     return TransacaoDTO.builder()
         .valor(request.getValor())
         .dataHora(request.getDataHora())
-        .usuario(usuario)
+        .usuario(userModel)
         .build();
   }
 
@@ -33,11 +35,12 @@ public class TransacaoMapper {
 
   // Model → Response (isolamento na saída com UserDTO)
   public TransacaoResponse toResponse(TransacaoModel model) {
-    UserDTO usuarioDTO = model.getUsuario() != null ? UserDTO.builder()
-        .id(model.getUsuario().getId())
-        .username(model.getUsuario().getUsername())
-        .build()
-        : null;
+    UserDTO usuarioDTO = Optional.ofNullable(model.getUsuario())
+        .map(u -> UserDTO.builder()
+            .id(u.getId())
+            .username(u.getUsername())
+            .build())
+        .orElse(null);
 
     return TransacaoResponse.builder()
         .id(model.getId())
@@ -46,5 +49,4 @@ public class TransacaoMapper {
         .usuario(usuarioDTO)
         .build();
   }
-
 }

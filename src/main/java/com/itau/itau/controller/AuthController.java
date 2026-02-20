@@ -33,16 +33,17 @@ public class AuthController {
   private UserService userService;
 
   @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<LoginResponse> login(@RequestBody @Valid AuthDTO auth) {
+  public ResponseEntity<String> login(@RequestBody @Valid AuthDTO auth) {
     try {
       var usernamePasswordAuthToken = new UsernamePasswordAuthenticationToken(auth.username(), auth.password());
       var authentication = this.authenticationManager.authenticate(usernamePasswordAuthToken);
       var token = tokenService.generateToken(authentication);
-      return ResponseEntity.ok(new LoginResponse(token));
+      return ResponseEntity.ok("Autenticado com sucesso!\n " + token);
 
     } catch (RuntimeException e) {
       log.error("Erro ao autenticar usuário: {}", e.getMessage());
-      return ResponseEntity.status(401).build();
+      return ResponseEntity.status(401)
+          .body("Erro ao autenticar usuário: " + e.getMessage() + " - Verifique suas credenciais e tente novamente.");
     }
 
   }

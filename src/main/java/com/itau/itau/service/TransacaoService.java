@@ -38,11 +38,9 @@ public class TransacaoService {
     validarRateLimit();
 
     // Obter usuário autenticado
-    String username = SecurityContextHolder.getContext().getAuthentication().getName();
-    UserModel usuario = userRepository.findByUsername(username)
-        .orElseThrow(() -> new RuntimeException("Usuário não encontrado: " + username));
+    UserModel user = obterUsuarioAutenticado();
 
-    TransacaoDTO dto = transacaoMapper.toDTO(transacaoRequest, usuario);
+    TransacaoDTO dto = transacaoMapper.toDTO(transacaoRequest, user);
     TransacaoModel transacao = transacaoMapper.toModel(dto);
     TransacaoModel transacaoSalva = transacaoRepository.save(transacao);
     return transacaoMapper.toResponse(transacaoSalva);
@@ -102,6 +100,12 @@ public class TransacaoService {
     if (quantidadeTransacoesUltimoMinuto >= transacaoProperties.limitePorMinuto()) {
       throw new RateLimitExceededException("Limite de transações por minuto excedido.");
     }
+  }
+
+  private UserModel obterUsuarioAutenticado() {
+    String username = SecurityContextHolder.getContext().getAuthentication().getName();
+    return userRepository.findByUsername(username)
+        .orElseThrow(() -> new RuntimeException("Usuário não encontrado: " + username));
   }
 
 }
