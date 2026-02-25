@@ -54,7 +54,7 @@ public class GlobalExceptionHandler {
     ErrorResponse error = new ErrorResponse(
         LocalDateTime.now(),
         HttpStatus.BAD_REQUEST.value(),
-        "Bad Request",
+        "Bad Request ",
         ex.getMessage(),
         request.getDescription(false).replace("uri=", ""));
     return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
