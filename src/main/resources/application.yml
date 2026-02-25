@@ -10,10 +10,3 @@ api:
   security:
     token:
       secret: ${JWT_SECRET:my-secret-key}
-spring:
-  datasource:
-    # ERRADO: url: jdbc:postgresql://localhost:5432/itau_db
-    # CERTO:
-    url: jdbc:postgresql://itau-postgres:5432/itau_db
-    username: postgres
-    password: password
