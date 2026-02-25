@@ -1,11 +1,11 @@
 # Estágio de Build
-FROM maven:3.9.7-eclipse-temurin-17-alpine AS build
+FROM  eclipse-temurin:11-jdk-alpine as build
 WORKDIR /app
 COPY . .
 RUN mvn clean package -DskipTests
 
 # Estágio de Execução
-FROM eclipse-temurin:17.0.9-jdk-slim
+FROM eclipse-temurin:11-jre-alpine
 WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
 EXPOSE 8080
