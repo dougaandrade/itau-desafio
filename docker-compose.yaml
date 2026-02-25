@@ -1,19 +1,19 @@
 services:
-  postgres: # <--- Esse é o nome que deve estar na URL (jdbc:postgresql://postgres:5432/...)
+  postgres:
     image: postgres:latest
     container_name: itau-postgres
-    environment:
-      POSTGRES_DB: postgres
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+    # ... (suas configs de env)
     ports:
       - "5432:5432"
 
-  itau-app:
+  itau-app: # ou o nome do serviço da sua app
     build: .
+    container_name: itau-api-app
+    ports:
+      - "8080:8080" # <--- ESSA LINHA É A CHAVE!
     depends_on:
       - postgres
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/postgres
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://itau-postgres:5432/postgres
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=postgres
