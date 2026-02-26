@@ -1,5 +1,5 @@
 services:
-  itau-db: # Este é o nome do HOST na rede Docker
+  itau-db:
     image: postgres:latest
     container_name: itau-postgres
     environment:
